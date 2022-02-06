@@ -6,12 +6,13 @@ import (
 )
 
 const (
-	// 方糖服务号
+	// FangTang WeChat
 	ChannelWeChatFT int64 = 9
 	// PushDeer
 	ChannelPushDeer int64 = 18
 )
 
+// Server-Turbo data type
 type TurboData struct {
 	Title   string `json:"title"`
 	Desp    string `json:"desp"`

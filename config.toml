@@ -1,0 +1,7 @@
+[size]
+push = 1
+
+[[endpoints]]
+id = -1
+url = "https://just.for.%s.test"
+token = "your"
