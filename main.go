@@ -1,7 +1,7 @@
 package main
 
 import (
-	"sub_center/push"
+	"subcenter/push"
 
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"

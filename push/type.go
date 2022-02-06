@@ -2,7 +2,7 @@ package push
 
 import (
 	"fmt"
-	"sub_center/manager"
+	"subcenter/manager"
 
 	"github.com/gookit/config/v2"
 )

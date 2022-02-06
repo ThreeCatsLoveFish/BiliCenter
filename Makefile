@@ -1,7 +1,7 @@
 all: build
 
 build:
-	go build -o output/sub_center main.go
+	go build -o output/subcenter main.go
 
 test:
 	go test

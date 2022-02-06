@@ -1,4 +1,4 @@
-module sub_center
+module subcenter
 
 go 1.16
 
