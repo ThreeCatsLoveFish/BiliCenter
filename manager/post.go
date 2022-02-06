@@ -7,15 +7,17 @@ import (
 	"strings"
 )
 
-func PostJson(url string, data string) {
+func Post(url string, data string) {
 	client := &http.Client{}
 
+	fmt.Println(url)
+	fmt.Println(data)
 	req, err := http.NewRequest("POST", url, strings.NewReader(data))
 	if err != nil {
 		// FIXME: handle error
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
 	if err != nil {

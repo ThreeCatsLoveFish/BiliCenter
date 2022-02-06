@@ -1,7 +1,6 @@
 package push
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -21,9 +20,9 @@ func init() {
 
 // Server-Turbo data type
 type TurboData struct {
-	Title   string `json:"title"`
-	Desp    string `json:"desp"`
-	Channel string `json:"channel"`
+	Title   string
+	Desp    string
+	Channel string
 }
 
 // Set title of data
@@ -56,11 +55,9 @@ func (data *TurboData) SetChannel(channels []int64) {
 
 // Marshal the data and obtain json string
 func (data *TurboData) ToString() string {
-	body, err := json.Marshal(data)
-	if err != nil {
-		println("Marshal failed, error: %v", err)
-		// FIXME: handle error here
-		return ""
-	}
-	return string(body)
+	return fmt.Sprintf("title=%s&desp=%s&channel=%s",
+		data.Title,
+		data.Desp,
+		data.Channel,
+	)
 }

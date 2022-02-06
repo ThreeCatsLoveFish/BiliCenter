@@ -74,5 +74,5 @@ func NewPush(id int64) Push {
 func (push Push) Submit() {
 	url := fmt.Sprintf(push.URL, push.Token)
 	data := push.ToString()
-	manager.PostJson(url, data)
+	manager.Post(url, data)
 }
