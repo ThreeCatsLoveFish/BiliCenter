@@ -1,0 +1,12 @@
+[global]
+size = 2
+
+[[endpoints]]
+type = "test"
+url = "https://just.for.%s.test"
+token = "your"
+
+[[endpoints]]
+type = "turbo"
+url = "https://sctapi.ftqq.com/%s.send"
+token = "your token"

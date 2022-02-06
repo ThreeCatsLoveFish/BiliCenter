@@ -16,12 +16,12 @@ func TestLoadConfig(t *testing.T) {
 	// add driver for support yaml content
 	config.AddDriver(toml.Driver)
 
-	err := config.LoadFiles("../config.toml")
+	err := config.LoadFiles("../config/push.toml")
 	if err != nil {
 		panic(err)
 	}
 
-	size := config.Get("size.push")
+	size := config.Get("global.size")
 	endpoints := make([]Endpoint, size.(int64))
 	config.BindStruct("endpoints", &endpoints)
 

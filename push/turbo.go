@@ -6,11 +6,18 @@ import (
 )
 
 const (
+	// Data name
+	dataName = "turbo"
+
 	// FangTang WeChat
 	ChannelWeChatFT int64 = 9
 	// PushDeer
 	ChannelPushDeer int64 = 18
 )
+
+func init() {
+	registerData(dataName, &TurboData{})
+}
 
 // Server-Turbo data type
 type TurboData struct {
@@ -19,8 +26,23 @@ type TurboData struct {
 	Channel string `json:"channel"`
 }
 
-// Create a new turbo data
-func NewTurboData(title, desp string, channels []int64) TurboData {
+// Set title of data
+func (TurboData) DataName() string {
+	return dataName
+}
+
+// Set title of data
+func (data *TurboData) SetTitle(title string) {
+	data.Title = title
+}
+
+// Set body of data
+func (data *TurboData) SetContent(content string) {
+	data.Desp = content
+}
+
+// Set channel of data
+func (data *TurboData) SetChannel(channels []int64) {
 	var channel string
 	for i, ch := range channels {
 		if i == 0 {
@@ -29,11 +51,11 @@ func NewTurboData(title, desp string, channels []int64) TurboData {
 			channel += fmt.Sprintf("|%d", ch)
 		}
 	}
-	return TurboData{title, desp, channel}
+	data.Channel = channel
 }
 
-// Obtain the json string of data
-func (data TurboData) ToString() string {
+// Marshal the data and obtain json string
+func (data *TurboData) ToString() string {
 	body, err := json.Marshal(data)
 	if err != nil {
 		println("Marshal failed, error: %v", err)
