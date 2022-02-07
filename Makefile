@@ -5,3 +5,6 @@ build:
 
 test:
 	go test
+
+run:
+	./output/subcenter

@@ -17,7 +17,7 @@ func initConfig() {
 		opt.DecoderConfig.TagName = "config"
 	})
 	config.AddDriver(toml.Driver)
-	err := config.LoadFiles("../config/push.toml")
+	err := config.LoadFiles("config/push.toml")
 	if err != nil {
 		panic(err)
 	}
