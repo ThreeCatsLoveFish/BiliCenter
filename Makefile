@@ -4,7 +4,7 @@ build:
 	go build -o output/subcenter main.go
 
 test:
-	go test ./push
+	go test ./service/push
 
 run:
 	./output/subcenter
