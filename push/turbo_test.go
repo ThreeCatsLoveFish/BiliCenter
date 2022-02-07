@@ -1,11 +1,6 @@
 package push
 
-import (
-	"testing"
-
-	"github.com/gookit/config/v2"
-	"github.com/gookit/config/v2/toml"
-)
+import "testing"
 
 func TestTurboData(t *testing.T) {
 	data := TurboData{}
@@ -21,19 +16,11 @@ func TestTurboData(t *testing.T) {
 }
 
 func TestTurboPush(t *testing.T) {
-	config.WithOptions(func(opt *config.Options) {
-		opt.DecoderConfig.TagName = "config"
-	})
-	config.AddDriver(toml.Driver)
-	err := config.LoadFiles("../config/push.toml")
-	if err != nil {
-		t.Log(err)
-	}
-	LoadEndpoints()
-
 	push := NewPush(1)
 	push.SetTitle("# Test turbo")
 	push.SetContent("Success if you can see this info!")
-	push.SetChannel([]int64{ChannelPushDeer, ChannelWeChatFT})
-	push.Submit()
+	push.SetChannel([]int64{ChannelPushDeer})
+	if err := push.Submit(); err != nil {
+		t.Fatalf("Submit failed, error: %v", err)
+	}
 }

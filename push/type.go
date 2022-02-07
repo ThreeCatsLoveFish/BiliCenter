@@ -5,12 +5,17 @@ import (
 	"subcenter/manager"
 
 	"github.com/gookit/config/v2"
+	"github.com/gookit/config/v2/toml"
 )
 
 var (
 	endpoints []Endpoint
 	dataMap   map[string]Data
 )
+
+func init() {
+	loadEndpoints()
+}
 
 // Endpoint represents a kind of subscription
 type Endpoint struct {
@@ -19,10 +24,18 @@ type Endpoint struct {
 	Token string `config:"token"`
 }
 
-func LoadEndpoints() {
-	size := config.Get("global.size")
+func loadEndpoints() {
+	pushConf := config.NewWithOptions("push", func(opt *config.Options) {
+		opt.DecoderConfig.TagName = "config"
+	})
+	pushConf.AddDriver(toml.Driver)
+	err := pushConf.LoadFiles("../config/push.toml")
+	if err != nil {
+		panic(err)
+	}
+	size := pushConf.Get("global.size")
 	endpoints = make([]Endpoint, size.(int64))
-	config.BindStruct("endpoints", &endpoints)
+	pushConf.BindStruct("endpoints", &endpoints)
 }
 
 // Data contain all info needed for push
@@ -71,8 +84,8 @@ func NewPush(id int64) Push {
 }
 
 // Submit the data to endpoint and finish one push task
-func (push Push) Submit() {
+func (push Push) Submit() error {
 	url := fmt.Sprintf(push.URL, push.Token)
 	data := push.ToString()
-	manager.Post(url, data)
+	return manager.Post(url, data)
 }

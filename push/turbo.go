@@ -20,9 +20,9 @@ func init() {
 
 // Server-Turbo data type
 type TurboData struct {
-	Title   string
-	Desp    string
-	Channel string
+	title   string
+	desp    string
+	channel string
 }
 
 // Set title of data
@@ -32,12 +32,12 @@ func (TurboData) DataName() string {
 
 // Set title of data
 func (data *TurboData) SetTitle(title string) {
-	data.Title = title
+	data.title = title
 }
 
 // Set body of data
 func (data *TurboData) SetContent(content string) {
-	data.Desp = content
+	data.desp = content
 }
 
 // Set channel of data
@@ -50,14 +50,14 @@ func (data *TurboData) SetChannel(channels []int64) {
 			channel += fmt.Sprintf("|%d", ch)
 		}
 	}
-	data.Channel = channel
+	data.channel = channel
 }
 
 // Marshal the data and obtain json string
 func (data *TurboData) ToString() string {
 	return fmt.Sprintf("title=%s&desp=%s&channel=%s",
-		data.Title,
-		data.Desp,
-		data.Channel,
+		data.title,
+		data.desp,
+		data.channel,
 	)
 }
