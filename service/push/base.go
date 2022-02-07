@@ -97,8 +97,8 @@ func NewPush(id int64) Push {
 	return Push{endpoint, data}
 }
 
-// Push data to endpoint and finish one push task
-func (push Push) Push() error {
+// Submit data to endpoint and finish one task
+func (push Push) Submit() error {
 	url := fmt.Sprintf(push.URL, push.Token)
 	data := push.ToString()
 	return manager.Post(url, data)
