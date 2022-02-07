@@ -20,7 +20,7 @@ func TestTurboPush(t *testing.T) {
 	push.SetTitle("# Test turbo")
 	push.SetContent("Success if you can see this info!")
 	push.SetChannel([]int64{ChannelPushDeer})
-	if err := push.Submit(); err != nil {
+	if err := push.Push(); err != nil {
 		t.Fatalf("Submit failed, error: %v", err)
 	}
 }

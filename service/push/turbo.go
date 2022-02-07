@@ -6,7 +6,9 @@ import (
 
 const (
 	// Data name
-	dataName = "turbo"
+	TurboName = "turbo"
+	// Token name
+	TurboEnv = "TURBO"
 
 	// FangTang WeChat
 	ChannelWeChatFT int64 = 9
@@ -15,7 +17,7 @@ const (
 )
 
 func init() {
-	registerData(dataName, &TurboData{})
+	registerData(TurboName, &TurboData{})
 }
 
 // Server-Turbo data type
@@ -27,7 +29,7 @@ type TurboData struct {
 
 // Set title of data
 func (TurboData) DataName() string {
-	return dataName
+	return TurboName
 }
 
 // Set title of data

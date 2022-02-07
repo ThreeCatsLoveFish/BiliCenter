@@ -10,6 +10,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    environment: prod
     steps:
     - uses: actions/checkout@v2
 
@@ -20,6 +21,13 @@ jobs:
 
     - name: Build
       run: make build
+      
+    - name: Test
+      run: make test
+      env:
+        TURBO: ${{ secrets.TURBO }}
 
     - name: Run
       run: make run
+      env:
+        TURBO: ${{ secrets.TURBO }}
