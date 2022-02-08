@@ -15,26 +15,32 @@ const (
 )
 
 type Task struct {
-	id        int64
 	taskType  TaskType
 	startTime time.Time
-	endTime   time.Time
 	pull.Pull
 	push.Push
 }
 
 // NewTask create a new task
-func NewTask() {
-	// TODO:
+func NewTask(taskType TaskType, pullId, pushId int64) Task {
+	return Task{
+		taskType:  taskType,
+		startTime: time.Now(),
+		Pull:      pull.NewPull(pushId),
+		Push:      push.NewPush(pushId),
+	}
 }
 
 func (task Task) Execute() error {
-	title, content := task.Obtain()
+	title, content, err := task.Obtain()
+	if err != nil {
+		return err
+	}
 	return task.Submit(title, content)
 }
 
 type TaskCenter struct {
-	wait  chan Task
+	wait chan Task
 }
 
 // NewTaskCenter initialize the task center

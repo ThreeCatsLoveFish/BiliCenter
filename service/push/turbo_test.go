@@ -3,7 +3,7 @@ package push
 import "testing"
 
 func TestTurboData(t *testing.T) {
-	data := TurboData{}
+	data := TurboPush{}
 	data.SetTitle("# Test function")
 	data.SetContent("Test ONLY")
 
@@ -15,7 +15,7 @@ func TestTurboData(t *testing.T) {
 }
 
 func TestTurboPush(t *testing.T) {
-	push := NewPush(1)
+	push := NewPush(0)
 	title := "# Test turbo"
 	content := "Success if you can see this info!"
 	if err := push.Submit(title, content); err != nil {

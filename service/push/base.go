@@ -1,17 +1,11 @@
 package push
 
 import (
-	"fmt"
-	"subcenter/manager"
-
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"
 )
 
-var (
-	endpoints []Endpoint
-	dataMap   map[string]PushData
-)
+var pushList []Push
 
 func init() {
 	initEndpoint()
@@ -38,71 +32,41 @@ func initEndpoint() {
 
 	// Load config file
 	size := pushConf.Get("global.size").(int64)
-	endpoints = make([]Endpoint, size)
+	endpoints := make([]Endpoint, size)
 	pushConf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here
 	pushConf.LoadOSEnv([]string{TurboEnv}, false)
 	// TODO: support multi tokens
 	turbo := pushConf.Get(TurboEnv).(string)
-	for idx, endpoint := range endpoints {
+	for _, endpoint := range endpoints {
 		if endpoint.Type == TurboName {
-			endpoints[idx].Token = turbo
+			endpoint.Token = turbo
+			pushList = append(pushList, &TurboPush{
+				Endpoint: endpoint,
+			})
 		}
 	}
 }
 
-// PushData contain all info needed for push action
-type PushData interface {
-	DataName() string
-	SetTitle(title string)
-	SetContent(body string)
-	ToString() string
+// Push contain all info needed for push action
+type Push interface {
+	PushName() string
+	Submit(title, content string) error
 }
 
-type EmptyPushData struct{}
-
-func (EmptyPushData) DataName() string           { return "" }
-func (EmptyPushData) ToString() string           { return "" }
-func (EmptyPushData) SetTitle(title string)      {}
-func (EmptyPushData) SetContent(body string)     {}
-
-// Register data with the specific name
-func registerData(name string, data PushData) {
-	if dataMap == nil {
-		dataMap = make(map[string]PushData)
-	}
-	dataMap[name] = data
+func NewPush(pushId int64) Push {
+	return pushList[pushId]
 }
 
-// Take out data with the specific name
-func getData(name string) PushData {
-	data, ok := dataMap[name]
-	if !ok {
-		return &EmptyPushData{}
-	}
-	return data
-}
-
-type Push struct {
+type RawPush struct {
 	Endpoint
-	PushData
 }
 
-func NewPush(id int64) Push {
-	endpoint := endpoints[id]
-	data := getData(endpoint.Type)
-	return Push{endpoint, data}
+func (RawPush) PushName() string {
+	return "RawPush"
 }
 
-// Submit data to endpoint and finish one task
-func (push *Push) Submit(title, content string) error {
-	// Prepare content and header
-	push.SetTitle(title)
-	push.SetContent(content)
-
-	// Submit info
-	url := fmt.Sprintf(push.URL, push.Token)
-	data := push.ToString()
-	return manager.Post(url, data)
+func (RawPush) Submit(title, content string) error {
+	return nil
 }

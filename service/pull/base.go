@@ -1,12 +1,11 @@
 package pull
 
-type Pull struct {
-	Type  string `config:"type"`
-	URL   string `config:"url"`
-	Token string `config:"token"`
+var pullList []Pull
+
+type Pull interface {
+	Obtain() (string, string, error)
 }
 
-// Obtain data from source and write to pushdata
-func (pull Pull) Obtain() (string, string) {
-	return "", ""
+func NewPull(pullId int64) Pull {
+	return pullList[pullId]
 }
