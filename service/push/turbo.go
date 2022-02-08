@@ -6,10 +6,8 @@ import (
 )
 
 const (
-	// Data name
 	TurboName = "turbo"
-	// Token env name
-	TurboEnv = "TURBO"
+	TurboEnv  = "TURBO"
 )
 
 // Server-Turbo push
