@@ -6,29 +6,9 @@ import (
 	"time"
 )
 
-type TaskType int64
-
-const (
-	TimerTask TaskType = iota
-	EventTask
-	PriceTask
-)
-
 type Task struct {
-	taskType  TaskType
-	startTime time.Time
 	pull.Pull
 	push.Push
-}
-
-// NewTask create a new task
-func NewTask(taskType TaskType, pullId, pushId int) Task {
-	return Task{
-		taskType:  taskType,
-		startTime: time.Now(),
-		Pull:      pull.NewPull(pushId),
-		Push:      push.NewPush(pushId),
-	}
 }
 
 func (task Task) Execute() error {
@@ -39,26 +19,50 @@ func (task Task) Execute() error {
 	return task.Submit(title, content)
 }
 
+type TaskMaker struct {
+	Task
+	period time.Duration
+}
+
+// NewTaskMaker create a new task maker
+func NewTaskMaker(period time.Duration, pullId, pushId int) TaskMaker {
+	return TaskMaker{
+		period: period,
+		Task: Task{
+			Pull: pull.NewPull(pushId),
+			Push: push.NewPush(pushId),
+		},
+	}
+}
+
 type TaskCenter struct {
-	wait chan Task
+	makers []TaskMaker
+	takers chan Task
 }
 
 // NewTaskCenter initialize the task center
-func NewTaskCenter(size int) TaskCenter {
+func NewTaskCenter(makers []TaskMaker, size int) TaskCenter {
 	wait := make(chan Task, size)
-	return TaskCenter{wait}
+	return TaskCenter{makers, wait}
 }
 
 // Add will append a new task in wait channel
 func (tc *TaskCenter) Add(task Task) {
-	tc.wait <- task
+	tc.takers <- task
 }
 
-// Run will block and execute all tasks
+// Run will block and execute all incoming tasks
 func (tc *TaskCenter) Run() {
+	for _, maker := range tc.makers {
+		go func(maker TaskMaker, takers chan Task) {
+			timer := time.NewTimer(maker.period)
+			<-timer.C
+			takers <- maker.Task
+		}(maker, tc.takers)
+	}
 	for {
 		select {
-		case task := <-tc.wait:
+		case task := <-tc.takers:
 			go func() {
 				task.Execute()
 			}()
