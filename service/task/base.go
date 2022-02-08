@@ -1,4 +1,4 @@
-package service
+package task
 
 import (
 	"subcenter/service/pull"
@@ -22,7 +22,7 @@ type Task struct {
 }
 
 // NewTask create a new task
-func NewTask(taskType TaskType, pullId, pushId int64) Task {
+func NewTask(taskType TaskType, pullId, pushId int) Task {
 	return Task{
 		taskType:  taskType,
 		startTime: time.Now(),

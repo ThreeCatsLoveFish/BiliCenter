@@ -3,7 +3,7 @@ package push
 import "testing"
 
 func TestTurboData(t *testing.T) {
-	data := TurboPush{}
+	data := turboPush{}
 	data.SetTitle("# Test function")
 	data.SetContent("Test ONLY")
 

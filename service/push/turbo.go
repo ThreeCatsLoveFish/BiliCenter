@@ -11,29 +11,24 @@ const (
 )
 
 // Server-Turbo push
-type TurboPush struct {
-	Endpoint
+type turboPush struct {
+	endpoint
 	title string
 	desp  string
 }
 
-// Name of push
-func (TurboPush) PushName() string {
-	return TurboName
-}
-
 // Set title of data
-func (push *TurboPush) SetTitle(title string) {
+func (push *turboPush) SetTitle(title string) {
 	push.title = title
 }
 
 // Set body of data
-func (push *TurboPush) SetContent(content string) {
+func (push *turboPush) SetContent(content string) {
 	push.desp = content
 }
 
 // Marshal the data and obtain json string
-func (push *TurboPush) ToString() string {
+func (push *turboPush) ToString() string {
 	return fmt.Sprintf("title=%s&desp=%s",
 		push.title,
 		push.desp,
@@ -41,7 +36,7 @@ func (push *TurboPush) ToString() string {
 }
 
 // Submit data to endpoint and finish one task
-func (push *TurboPush) Submit(title, content string) error {
+func (push *turboPush) Submit(title, content string) error {
 	// Prepare content and header
 	push.SetTitle(title)
 	push.SetContent(content)

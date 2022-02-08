@@ -8,18 +8,18 @@ import (
 var pushList []Push
 
 func init() {
-	initEndpoint()
+	initPush()
 }
 
-// Endpoint represents a kind of subscription
-type Endpoint struct {
+// endpoint represents a kind of subscription
+type endpoint struct {
 	Type  string `config:"type"`
 	URL   string `config:"url"`
 	Token string `config:"token"`
 }
 
-// initEndpoint bind endpoints with config file
-func initEndpoint() {
+// initPush bind endpoints with config file
+func initPush() {
 	pushConf := config.NewWithOptions("push", func(opt *config.Options) {
 		opt.DecoderConfig.TagName = "config"
 		opt.ParseEnv = true
@@ -32,7 +32,7 @@ func initEndpoint() {
 
 	// Load config file
 	size := pushConf.Get("global.size").(int64)
-	endpoints := make([]Endpoint, size)
+	endpoints := make([]endpoint, size)
 	pushConf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here
@@ -42,8 +42,8 @@ func initEndpoint() {
 	for _, endpoint := range endpoints {
 		if endpoint.Type == TurboName {
 			endpoint.Token = turbo
-			pushList = append(pushList, &TurboPush{
-				Endpoint: endpoint,
+			pushList = append(pushList, &turboPush{
+				endpoint: endpoint,
 			})
 		}
 	}
@@ -51,22 +51,20 @@ func initEndpoint() {
 
 // Push contain all info needed for push action
 type Push interface {
-	PushName() string
 	Submit(title, content string) error
 }
 
-func NewPush(pushId int64) Push {
+func NewPush(pushId int) Push {
+	if pushId >= len(pushList) {
+		return rawPush{}
+	}
 	return pushList[pushId]
 }
 
-type RawPush struct {
-	Endpoint
+type rawPush struct {
+	endpoint
 }
 
-func (RawPush) PushName() string {
-	return "RawPush"
-}
-
-func (RawPush) Submit(title, content string) error {
+func (rawPush) Submit(title, content string) error {
 	return nil
 }
