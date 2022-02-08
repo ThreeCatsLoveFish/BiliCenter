@@ -25,7 +25,7 @@ func initPush() {
 		opt.ParseEnv = true
 	})
 	pushConf.AddDriver(toml.Driver)
-	err := pushConf.LoadFiles("../../config/push.toml")
+	err := pushConf.LoadFiles("config/push.toml")
 	if err != nil {
 		panic(err)
 	}

@@ -55,9 +55,11 @@ func (tc *TaskCenter) Add(task Task) {
 func (tc *TaskCenter) Run() {
 	for _, maker := range tc.makers {
 		go func(maker TaskMaker, takers chan Task) {
-			timer := time.NewTimer(maker.period)
-			<-timer.C
-			takers <- maker.Task
+			for {
+				timer := time.NewTimer(maker.period)
+				<-timer.C
+				takers <- maker.Task
+			}
 		}(maker, tc.takers)
 	}
 	for {
