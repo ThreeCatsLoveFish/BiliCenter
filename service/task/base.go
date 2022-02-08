@@ -16,6 +16,9 @@ func (task Task) Execute() error {
 	if err != nil {
 		return err
 	}
+	if len(title) <= 0 {
+		return nil
+	}
 	return task.Submit(title, content)
 }
 
