@@ -1,5 +1,7 @@
 package pull
 
+import "time"
+
 var pullList []Pull
 
 type Pull interface {
@@ -13,8 +15,8 @@ func NewPull(pullId int) Pull {
 	return pullList[pullId]
 }
 
-type rawPull struct {}
+type rawPull struct{}
 
 func (rawPull) Obtain() (string, string, error) {
-	return "# Empty info", "EMPTY", nil
+	return "# Heartbeat", time.Now().Format(time.RFC1123) + " From SubCenter", nil
 }
