@@ -57,7 +57,6 @@ type PushData interface {
 	DataName() string
 	SetTitle(title string)
 	SetContent(body string)
-	SetChannel(channel []int64)
 	ToString() string
 }
 
@@ -67,7 +66,6 @@ func (EmptyPushData) DataName() string           { return "" }
 func (EmptyPushData) ToString() string           { return "" }
 func (EmptyPushData) SetTitle(title string)      {}
 func (EmptyPushData) SetContent(body string)     {}
-func (EmptyPushData) SetChannel(channel []int64) {}
 
 // Register data with the specific name
 func registerData(name string, data PushData) {
@@ -98,7 +96,12 @@ func NewPush(id int64) Push {
 }
 
 // Submit data to endpoint and finish one task
-func (push Push) Submit() error {
+func (push *Push) Submit(title, content string) error {
+	// Prepare content and header
+	push.SetTitle(title)
+	push.SetContent(content)
+
+	// Submit info
 	url := fmt.Sprintf(push.URL, push.Token)
 	data := push.ToString()
 	return manager.Post(url, data)

@@ -14,27 +14,9 @@ const (
 	PriceTask
 )
 
-type TaskStatus int64
-
-const (
-	// Final status
-	Waiting TaskStatus = iota
-
-	// Status of Pull
-	Pulling
-	PullSuccess
-	PullFail
-
-	// Status of Push
-	Pushing
-	PushSuccess
-	PushFail
-)
-
 type Task struct {
 	id        int64
 	taskType  TaskType
-	status    TaskStatus
 	startTime time.Time
 	endTime   time.Time
 	pull.Pull
@@ -46,31 +28,34 @@ func NewTask() {
 	// TODO:
 }
 
-func (task Task) DoPull(success, fail chan Task) {
-	err := task.Obtain()
-	if err != nil {
-		fail <- task
-		return
-	}
-	success <- task
-}
-
-func (task Task) DoPush(success, fail chan Task) {
-	err := task.Submit()
-	if err != nil {
-		fail <- task
-		return
-	}
-	success <- task
+func (task Task) Execute() error {
+	title, content := task.Obtain()
+	return task.Submit(title, content)
 }
 
 type TaskCenter struct {
-	wait chan Task
-	pull chan Task
-	push chan Task
+	wait  chan Task
+}
+
+// NewTaskCenter initialize the task center
+func NewTaskCenter(size int) TaskCenter {
+	wait := make(chan Task, size)
+	return TaskCenter{wait}
+}
+
+// Add will append a new task in wait channel
+func (tc *TaskCenter) Add(task Task) {
+	tc.wait <- task
 }
 
 // Run will block and execute all tasks
 func (tc *TaskCenter) Run() {
-	// TODO:
+	for {
+		select {
+		case task := <-tc.wait:
+			go func() {
+				task.Execute()
+			}()
+		}
+	}
 }

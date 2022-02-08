@@ -6,10 +6,9 @@ func TestTurboData(t *testing.T) {
 	data := TurboData{}
 	data.SetTitle("# Test function")
 	data.SetContent("Test ONLY")
-	data.SetChannel([]int64{ChannelPushDeer, ChannelWeChatFT})
 
 	result := data.ToString()
-	except := `title=# Test function&desp=Test ONLY&channel=18|9`
+	except := `title=# Test function&desp=Test ONLY`
 	if result != except {
 		t.Fatalf("ToString() error! get: %s, except: %s", result, except)
 	}
@@ -17,10 +16,9 @@ func TestTurboData(t *testing.T) {
 
 func TestTurboPush(t *testing.T) {
 	push := NewPush(1)
-	push.SetTitle("# Test turbo")
-	push.SetContent("Success if you can see this info!")
-	push.SetChannel([]int64{ChannelPushDeer})
-	if err := push.Submit(); err != nil {
+	title := "# Test turbo"
+	content := "Success if you can see this info!"
+	if err := push.Submit(title, content); err != nil {
 		t.Fatalf("Submit failed, error: %v", err)
 	}
 }
