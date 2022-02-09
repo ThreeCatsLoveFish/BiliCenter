@@ -9,7 +9,7 @@ var (
 
 func init() {
 	var err error
-	loc, err = time.LoadLocation("China/Shanghai")
+	loc, err = time.LoadLocation("Asia/Shanghai")
 	if err != nil {
 		panic("load location error")
 	}
