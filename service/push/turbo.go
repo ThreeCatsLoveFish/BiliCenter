@@ -2,6 +2,7 @@ package push
 
 import (
 	"fmt"
+	"net/url"
 	"subcenter/manager"
 )
 
@@ -29,19 +30,19 @@ func (push turboPush) SetContent(content string) turboPush {
 	return push
 }
 
-// Marshal the data and obtain json string
-func (push turboPush) ToString() string {
-	return fmt.Sprintf("title=%s&desp=%s",
-		push.title,
-		push.desp,
-	)
+// ToValue gives a map with value embedded
+func (push turboPush) ToValue() url.Values {
+	return url.Values{
+		"title": []string{push.title},
+		"desp":  []string{push.desp},
+	}
 }
 
 // Submit data to endpoint and finish one task
 func (push turboPush) Submit(title, content string) error {
 	// Prepare content and header
 	url := fmt.Sprintf(push.URL, push.Token)
-	data := push.SetTitle(title).SetContent(content).ToString()
+	data := push.SetTitle(title).SetContent(content).ToValue()
 	// Submit info
-	return manager.Post(url, data)
+	return manager.PostForm(url, data)
 }
