@@ -22,15 +22,21 @@ func (task Task) Execute() error {
 	return task.Submit(title, content)
 }
 
+// TaskMaker can trigger new task execution
 type TaskMaker struct {
+	// Task that needs to be executed
 	Task
+	// initTask means create a task when maker run
+	initTask bool
+	// period between two tasks
 	period time.Duration
 }
 
 // NewTaskMaker create a new task maker
-func NewTaskMaker(period time.Duration, pullId, pushId int) TaskMaker {
+func NewTaskMaker(period time.Duration, initTask bool, pullId, pushId int) TaskMaker {
 	return TaskMaker{
-		period: period,
+		initTask: initTask,
+		period:   period,
 		Task: Task{
 			Pull: pull.NewPull(pushId),
 			Push: push.NewPush(pushId),
@@ -58,6 +64,9 @@ func (tc *TaskCenter) Add(task Task) {
 func (tc *TaskCenter) Run() {
 	for _, maker := range tc.makers {
 		go func(maker TaskMaker, takers chan Task) {
+			if maker.initTask {
+				takers <- maker.Task
+			}
 			for {
 				timer := time.NewTimer(maker.period)
 				<-timer.C

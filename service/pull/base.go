@@ -10,13 +10,13 @@ type Pull interface {
 
 func NewPull(pullId int) Pull {
 	if pullId >= len(pullList) {
-		return rawPull{}
+		return RawPull{}
 	}
 	return pullList[pullId]
 }
 
-type rawPull struct{}
+type RawPull struct{}
 
-func (rawPull) Obtain() (string, string, error) {
-	return "# Heartbeat", time.Now().Format(time.RFC1123) + " From SubCenter", nil
+func (RawPull) Obtain() (string, string, error) {
+	return "# Heartbeat", time.Now().Format(time.RFC1123) + " from SubCenter", nil
 }

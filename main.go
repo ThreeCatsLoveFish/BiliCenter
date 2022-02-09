@@ -6,8 +6,9 @@ import (
 )
 
 func main() {
+	heartbeat := task.NewTaskMaker(time.Hour*1, true, 0, 0)
 	makers := []task.TaskMaker{
-		task.NewTaskMaker(time.Hour * 6, 0, 0),
+		heartbeat,
 	}
 	taskCenter := task.NewTaskCenter(makers, 5)
 	taskCenter.Run()
