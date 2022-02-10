@@ -1,0 +1,14 @@
+[global]
+size = 2
+
+[[tasks]]
+init = true
+pull = "HeartBeat"
+push = "threecats"
+period = 3600000000000
+
+[[tasks]]
+init = false
+pull = "EastMoney"
+push = "threecats"
+period = 60000000000

@@ -1,11 +1,13 @@
 package push
 
 import (
+	"strings"
+
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"
 )
 
-var pushList []Push
+var pushMap map[string]Push
 
 func init() {
 	initPush()
@@ -13,6 +15,7 @@ func init() {
 
 // endpoint represents a kind of subscription
 type endpoint struct {
+	Name  string `config:"name"`
 	Type  string `config:"type"`
 	URL   string `config:"url"`
 	Token string `config:"token"`
@@ -37,12 +40,13 @@ func initPush() {
 
 	// Load token or key here
 	pushConf.LoadOSEnv([]string{TurboEnv}, false)
-	// TODO: support multi tokens
 	turbo := pushConf.Get(TurboEnv).(string)
+	turboList, idx := strings.Split(turbo, ","), 0
 	for _, endpoint := range endpoints {
 		if endpoint.Type == TurboName {
-			endpoint.Token = turbo
-			pushList = append(pushList, &turboPush{
+			endpoint.Token = turboList[idx]
+			idx++
+			addPush(endpoint.Name, &turboPush{
 				endpoint: endpoint,
 			})
 		}
@@ -54,17 +58,25 @@ type Push interface {
 	Submit(title, content string) error
 }
 
-func NewPush(pushId int) Push {
-	if pushId >= len(pushList) {
-		return rawPush{}
+func addPush(name string, push Push) {
+	if pushMap == nil {
+		pushMap = make(map[string]Push)
 	}
-	return pushList[pushId]
+	pushMap[name] = push
 }
 
-type rawPush struct {
+func NewPush(name string) Push {
+	if pull, ok := pushMap[name]; ok {
+		return pull
+	} else {
+		return RawPush{}
+	}
+}
+
+type RawPush struct {
 	endpoint
 }
 
-func (rawPush) Submit(title, content string) error {
+func (RawPush) Submit(title, content string) error {
 	return nil
 }

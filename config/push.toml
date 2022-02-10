@@ -2,11 +2,13 @@
 size = 2
 
 [[endpoints]]
+name = "test"
 type = "test"
 url = "https://just.for.%s.test"
 token = "your"
 
 [[endpoints]]
+name = "threecats"
 type = "turbo"
 url = "https://sctapi.ftqq.com/%s.send"
 token = "your token"

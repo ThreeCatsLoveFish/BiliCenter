@@ -19,7 +19,7 @@ SubCenter是一个集成各种任务并进行实时推送的中间件，本身�
 
 - [ ] 数字货币：[币安](https://www.binance.com/)
 - [ ] 钱包变动：[BSC](https://github.com/binance-chain/bsc)
-- [ ] A股价格：[新浪](https://finance.sina.com.cn/stock/)
+- [x] A股价格：[新浪](https://finance.sina.com.cn/stock/)
 - [ ] M股价格：[富途](https://www.futunn.com/)
 - [ ] ...
 

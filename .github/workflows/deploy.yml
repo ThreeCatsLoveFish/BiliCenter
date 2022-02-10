@@ -3,8 +3,8 @@ name: Deploy SubCenter
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  schedule:
+    - cron: "0 9 * * 1-5"
 
 jobs:
 
@@ -26,3 +26,4 @@ jobs:
       run: make run
       env:
         TURBO: ${{ secrets.TURBO }}
+        A_STOCK: ${{ secrets.A_STOCK }}

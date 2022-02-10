@@ -3,31 +3,45 @@ package pull
 import "time"
 
 var (
-	loc      *time.Location
-	pullList []Pull
+	location *time.Location
+	pullMap  map[string]Pull
+)
+
+const (
+	HeartBeat = "HeartBeat"
 )
 
 func init() {
 	var err error
-	loc, err = time.LoadLocation("Asia/Shanghai")
+	location, err = time.LoadLocation("Asia/Shanghai")
 	if err != nil {
 		panic("load location error")
 	}
+	addPull(HeartBeat, HeartBeatPull{})
+	initStock()
 }
 
 type Pull interface {
 	Obtain() (string, string, error)
 }
 
-func NewPull(pullId int) Pull {
-	if pullId >= len(pullList) {
-		return RawPull{}
+func addPull(name string, pull Pull) {
+	if pullMap == nil {
+		pullMap = make(map[string]Pull)
 	}
-	return pullList[pullId]
+	pullMap[name] = pull
 }
 
-type RawPull struct{}
+func NewPull(name string) Pull {
+	if pull, ok := pullMap[name]; ok {
+		return pull
+	} else {
+		return HeartBeatPull{}
+	}
+}
 
-func (RawPull) Obtain() (string, string, error) {
-	return "# Heartbeat", time.Now().In(loc).Format(time.RFC1123Z), nil
+type HeartBeatPull struct{}
+
+func (HeartBeatPull) Obtain() (string, string, error) {
+	return "# Heartbeat", time.Now().In(location).Format(time.RFC1123Z), nil
 }
