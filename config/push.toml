@@ -1,5 +1,5 @@
 [global]
-size = 2
+size = 3
 
 [[endpoints]]
 name = "test"
@@ -9,6 +9,12 @@ token = "your"
 
 [[endpoints]]
 name = "threecats"
+type = "turbo"
+url = "https://sctapi.ftqq.com/%s.send"
+token = "your token"
+
+[[endpoints]]
+name = "sam"
 type = "turbo"
 url = "https://sctapi.ftqq.com/%s.send"
 token = "your token"

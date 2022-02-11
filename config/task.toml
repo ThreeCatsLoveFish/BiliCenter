@@ -8,7 +8,13 @@ push = "threecats"
 period = 3600000000000
 
 [[tasks]]
-init = false
+init = true
 pull = "EastMoney"
 push = "threecats"
-period = 60000000000
+period = 30000000000
+
+[[tasks]]
+init = true
+pull = "EastMoney"
+push = "sam"
+period = 30000000000
