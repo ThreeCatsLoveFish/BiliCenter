@@ -13,8 +13,8 @@ pull = "EastMoney"
 push = "threecats"
 period = 30000000000
 
-[[tasks]]
-init = true
-pull = "EastMoney"
-push = "sam"
-period = 30000000000
+# [[tasks]]
+# init = true
+# pull = "EastMoney"
+# push = "sam"
+# period = 30000000000

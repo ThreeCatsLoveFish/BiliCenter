@@ -6,5 +6,5 @@ build:
 test:
 	go test ./service/push
 
-run:
+run: build
 	./output/subcenter

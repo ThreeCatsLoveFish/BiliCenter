@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 	"subcenter/manager"
+	"subcenter/service/push"
 	"time"
 
 	"github.com/gookit/config/v2"
@@ -64,10 +65,16 @@ func (data StockData) low() float64 {
 	return float64(data.Lowest) / 100.0
 }
 
-func (data StockData) ToString() string {
-	return fmt.Sprintf(`股票名称: %s 最新价: %.2f 涨跌幅: %.2f%% 今开价: %.2f 最高价: %.2f 最低价: %.2f`,
-		data.Name, data.now(), data.rate(),
-		data.open(), data.high(), data.low())
+func (data StockData) title() string {
+	return fmt.Sprintf("# %s %s", data.Name, data.Code)
+}
+
+func (data StockData) content() string {
+	return fmt.Sprintf(
+		"时间: %s\n\n最新价: %.2f 涨跌幅: %.2f%%\n\n今开价: %.2f 最高价: %.2f 最低价: %.2f",
+		time.Now().In(location).Format(time.RFC1123Z),
+		data.now(), data.rate(), data.open(), data.high(), data.low(),
+	)
 }
 
 type EastMoneyPull struct {
@@ -101,20 +108,18 @@ func (EastMoneyPull) getData(secId string) (*StockData, error) {
 	return &b.Data, nil
 }
 
-func (pull EastMoneyPull) Obtain() (string, string, error) {
-	var data []string
+func (pull EastMoneyPull) Obtain() ([]push.Data, error) {
+	var data []push.Data
 	for _, stock := range pull.stockList {
 		stock, err := pull.getData(stock)
 		if err != nil {
 			// FIXME: add log here
 			continue
 		}
-		data = append(data, stock.ToString())
+		data = append(data, push.Data{
+			Title:   stock.title(),
+			Content: stock.content(),
+		})
 	}
-	return "# A Stocks",
-		fmt.Sprintf(
-			"Time: %s Data: %v",
-			time.Now().In(location).Format(time.RFC1123Z),
-			data,
-		), nil
+	return data, nil
 }

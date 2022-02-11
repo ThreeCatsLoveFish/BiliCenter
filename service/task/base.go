@@ -14,32 +14,29 @@ type Task struct {
 	push.Push
 }
 
-func (task Task) Execute() error {
-	title, content, err := task.Obtain()
+func (task Task) Execute() {
+	dataList, err := task.Obtain()
 	if err != nil {
-		return err
+		// TODO: add log here
+		return
 	}
-	if len(title) <= 0 {
-		return nil
+	for _, data := range dataList {
+		task.Submit(data)
 	}
-	return task.Submit(title, content)
 }
 
 // TaskMaker can trigger new task execution
 type TaskMaker struct {
-	// Task that needs to be executed
 	Task
-	// initTask means create a task when maker run
-	initTask bool
-	// period between two tasks
+	init   bool
 	period time.Duration
 }
 
 // NewTaskMaker create a new task maker
-func NewTaskMaker(period time.Duration, initTask bool, pullName, pushName string) TaskMaker {
+func NewTaskMaker(period time.Duration, init bool, pullName, pushName string) TaskMaker {
 	return TaskMaker{
-		initTask: initTask,
-		period:   period,
+		init:   init,
+		period: period,
 		Task: Task{
 			Pull: pull.NewPull(pullName),
 			Push: push.NewPush(pushName),
@@ -49,7 +46,7 @@ func NewTaskMaker(period time.Duration, initTask bool, pullName, pushName string
 
 // createTask can create new task and send to taker
 func createTask(maker TaskMaker, takers chan Task) {
-	if maker.initTask {
+	if maker.init {
 		takers <- maker.Task
 	}
 	for {

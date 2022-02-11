@@ -1,6 +1,9 @@
 package pull
 
-import "time"
+import (
+	"subcenter/service/push"
+	"time"
+)
 
 var (
 	location *time.Location
@@ -22,7 +25,7 @@ func init() {
 }
 
 type Pull interface {
-	Obtain() (string, string, error)
+	Obtain() ([]push.Data, error)
 }
 
 func addPull(name string, pull Pull) {
@@ -42,6 +45,11 @@ func NewPull(name string) Pull {
 
 type HeartBeatPull struct{}
 
-func (HeartBeatPull) Obtain() (string, string, error) {
-	return "# Heartbeat", time.Now().In(location).Format(time.RFC1123Z), nil
+func (HeartBeatPull) Obtain() ([]push.Data, error) {
+	return []push.Data{
+		{
+			Title:   "# Heartbeat",
+			Content: time.Now().In(location).Format(time.RFC1123Z),
+		},
+	}, nil
 }

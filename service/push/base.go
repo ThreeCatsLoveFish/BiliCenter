@@ -53,9 +53,15 @@ func initPush() {
 	}
 }
 
+// Data represents data needed for push
+type Data struct {
+	Title string
+	Content string
+}
+
 // Push contain all info needed for push action
 type Push interface {
-	Submit(title, content string) error
+	Submit(data Data) error
 }
 
 func addPush(name string, push Push) {
@@ -77,6 +83,6 @@ type RawPush struct {
 	endpoint
 }
 
-func (RawPush) Submit(title, content string) error {
+func (RawPush) Submit(data Data) error {
 	return nil
 }
