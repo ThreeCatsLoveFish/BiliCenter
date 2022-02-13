@@ -2,7 +2,7 @@ name: Deploy SubCenter
 
 on:
   schedule:
-    - cron: "0 1 * * 1-5"
+    - cron: "15 1 * * 1-5"
 
 jobs:
 
