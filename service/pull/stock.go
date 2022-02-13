@@ -18,7 +18,7 @@ const (
 	EastMoney = "EastMoney"
 )
 
-// initPush bind endpoints with config file
+// initStock add stock from config file
 func initStock() {
 	pushConf := config.NewWithOptions("stock", func(opt *config.Options) {
 		opt.ParseEnv = true

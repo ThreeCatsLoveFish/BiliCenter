@@ -64,7 +64,7 @@ type taskConfig struct {
 }
 
 func getTaskMaker() []TaskMaker {
-	taskConf := config.NewWithOptions("push", func(opt *config.Options) {
+	taskConf := config.NewWithOptions("task", func(opt *config.Options) {
 		opt.DecoderConfig.TagName = "config"
 		opt.ParseEnv = true
 	})
@@ -100,22 +100,12 @@ func NewTaskCenter() TaskCenter {
 	return TaskCenter{makers, wait}
 }
 
-// Add will append a new task in wait channel
-func (tc *TaskCenter) Add(task Task) {
-	tc.takers <- task
-}
-
 // Run will block and execute all incoming tasks
 func (tc *TaskCenter) Run() {
 	for _, maker := range tc.makers {
 		go createTask(maker, tc.takers)
 	}
-	for {
-		select {
-		case task := <-tc.takers:
-			go func() {
-				task.Execute()
-			}()
-		}
+	for task := range tc.takers {
+		go task.Execute()
 	}
 }
