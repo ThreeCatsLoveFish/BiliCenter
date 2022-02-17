@@ -102,6 +102,9 @@ func NewTaskCenter() TaskCenter {
 
 // Run will block and execute all incoming tasks
 func (tc *TaskCenter) Run() {
+	if len(tc.makers) <= 0 {
+		return
+	}
 	for _, maker := range tc.makers {
 		go createTask(maker, tc.takers)
 	}

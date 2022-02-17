@@ -12,8 +12,8 @@ SubCenter —— 集成各种任务并进行实时推送的中间件。
 由于推送的设备要求与维护成本较高，请自行前往相关网站注册，如需接入可发Issue
 
 - [x] [Server酱-Turbo版](https://sct.ftqq.com/)
-- [ ] [PushDeer (IOS)](https://github.com/easychen/pushdeer)
-- [ ] [PushPlus (微信)]()
+- [x] [PushDeer (IOS)](https://github.com/easychen/pushdeer)
+- [ ] [PushPlus (微信)](https://www.pushplus.plus/)
 
 ### 数据服务
 

@@ -1,17 +1,17 @@
 [global]
-size = 2
+size = 0
 
-[[tasks]]
-init = true
-pull = "HeartBeat"
-push = "threecats"
-period = 3600000000000
+# [[tasks]]
+# init = true
+# pull = "HeartBeat"
+# push = "threecats_iphoneX"
+# period = 3600000000000
 
-[[tasks]]
-init = true
-pull = "EastMoney"
-push = "threecats"
-period = 1000000000
+# [[tasks]]
+# init = true
+# pull = "EastMoney"
+# push = "threecats"
+# period = 1000000000
 
 # [[tasks]]
 # init = true

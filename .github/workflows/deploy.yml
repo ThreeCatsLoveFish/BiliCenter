@@ -2,7 +2,7 @@ name: Deploy SubCenter
 
 on:
   schedule:
-    # - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
 
 jobs:
 
@@ -24,4 +24,5 @@ jobs:
       run: make run
       env:
         TURBO: ${{ secrets.TURBO }}
+        PUSHDEER: ${{ secrets.PUSHDEER }}
         A_STOCK: ${{ secrets.A_STOCK }}

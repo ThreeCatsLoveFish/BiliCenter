@@ -39,14 +39,26 @@ func initPush() {
 	pushConf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here
-	pushConf.LoadOSEnv([]string{TurboEnv}, false)
+	if !pushConf.Get("global.action").(bool) {
+		return
+	}
+	pushConf.LoadOSEnv([]string{TurboEnv, PushDeerEnv}, false)
 	turbo := pushConf.Get(TurboEnv).(string)
-	turboList, idx := strings.Split(turbo, ","), 0
+	turboList, tId := strings.Split(turbo, ","), 0
+	pushDeer := pushConf.Get(PushDeerEnv).(string)
+	pushDeerList, pId := strings.Split(pushDeer, ","), 0
 	for _, endpoint := range endpoints {
-		if endpoint.Type == TurboName {
-			endpoint.Token = turboList[idx]
-			idx++
-			addPush(endpoint.Name, &turboPush{
+		switch endpoint.Type {
+		case TurboName:
+			endpoint.Token = turboList[tId]
+			tId++
+			addPush(endpoint.Name, &TurboPush{
+				endpoint: endpoint,
+			})
+		case PushDeerName:
+			endpoint.Token = pushDeerList[pId]
+			pId++
+			addPush(endpoint.Name, &PushDeerPush{
 				endpoint: endpoint,
 			})
 		}
@@ -55,7 +67,7 @@ func initPush() {
 
 // Data represents data needed for push
 type Data struct {
-	Title string
+	Title   string
 	Content string
 }
 

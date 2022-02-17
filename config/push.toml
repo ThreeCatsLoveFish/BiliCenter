@@ -1,20 +1,27 @@
 [global]
-size = 3
+action = false # Run on GitHub Action
+size = 4 
 
 [[endpoints]]
 name = "test"
+token = "your"
 type = "test"
 url = "https://just.for.%s.test"
-token = "your"
 
 [[endpoints]]
 name = "threecats"
+token = "your token"
 type = "turbo"
 url = "https://sctapi.ftqq.com/%s.send"
+
+[[endpoints]]
+name = "threecats_iphoneX"
 token = "your token"
+type = "push_deer"
+url = "http://124.222.124.7:8800/message/push"
 
 [[endpoints]]
 name = "sam"
+token = "your token"
 type = "turbo"
 url = "https://sctapi.ftqq.com/%s.send"
-token = "your token"
