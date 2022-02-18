@@ -72,7 +72,7 @@ func taskCallBack(conn *websocket.Conn, task TaskMsg) error {
 	// Send callback message
 	resp := Callback{
 		Code:   "GET_TASK",
-		Uid:    "12309253",
+		Uid:    biliConfig.Uid,
 		Secret: task.Data.Secret,
 	}
 	data, err := json.Marshal(resp)
@@ -104,25 +104,25 @@ func handleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 }
 
 // joinLottery attend the bilibili live lottery
-func joinLottery(conn *websocket.Conn, anchor AnchorMsg) error {
+func joinLottery(conn *websocket.Conn, anchor AnchorMsg) {
 	// TODO: Precheck
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Join"
 	data := url.Values{
-		"id":         []string{fmt.Sprint(anchor.Data.Id)},
-		"platform":   []string{"pc"},
+		"id":       []string{fmt.Sprint(anchor.Data.Id)},
+		"platform": []string{"pc"},
 	}
-	cookie := ""
-	body, err := manager.PostFormWithCookie(rawUrl, cookie, data)
-	if err != nil {
-		fmt.Printf("PostFormWithCookie error: %v, raw data: %v\n", err, data)
-		return err
+	for _, cookie := range biliConfig.Cookies {
+		body, err := manager.PostFormWithCookie(rawUrl, cookie, data)
+		if err != nil {
+			fmt.Printf("PostFormWithCookie error: %v, raw data: %v\n", err, data)
+			continue
+		}
+		var resp BiliJoinResp
+		if err = json.Unmarshal(body, &resp); err != nil {
+			fmt.Printf("Unmarshal BiliJoinResp error: %v, raw data: %v\n", err, body)
+		}
+		fmt.Printf("Response: %v", resp)
 	}
-	var resp BiliJoinResp
-	if err = json.Unmarshal(body, &resp); err != nil {
-		fmt.Printf("Unmarshal BiliJoinResp error: %v, raw data: %v\n", err, body)
-	}
-	fmt.Printf("Response: %v", resp)
-	return err
 }
 
 // handleAnchorData deal with anchor lottery message
