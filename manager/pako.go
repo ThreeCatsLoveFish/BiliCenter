@@ -1,4 +1,4 @@
-package awpush
+package manager
 
 import (
 	"bytes"

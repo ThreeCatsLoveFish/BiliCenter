@@ -2,6 +2,7 @@ package awpush
 
 import (
 	"fmt"
+	"subcenter/manager"
 
 	"github.com/gorilla/websocket"
 )
@@ -58,7 +59,7 @@ func establish(uid, token string) (ws *websocket.Conn, err error) {
 		fmt.Printf("ReadMessage error: %v\n", err)
 		return nil, err
 	}
-	res := string(PakoInflate(msg))
+	res := string(manager.PakoInflate(msg))
 	greet := `{"code":0,"type":"WS_OPEN","data":"连接成功"}`
 	if res != greet {
 		fmt.Printf("Greeting error, obtain: %s\n", res)

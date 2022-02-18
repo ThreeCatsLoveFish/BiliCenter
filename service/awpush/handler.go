@@ -1,10 +1,10 @@
 package awpush
 
 import (
-	"blth/manager"
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"subcenter/manager"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -49,7 +49,7 @@ func handleMsg(conn *websocket.Conn, timer *time.Timer) error {
 		return nil
 	}
 	// Obtain raw data bytes
-	raw := PakoInflate(msg)
+	raw := manager.PakoInflate(msg)
 	var rawMsg RawMsg
 	fmt.Printf("Receive msg: %s\n", string(raw))
 	err = json.Unmarshal(raw, &rawMsg)
@@ -94,7 +94,7 @@ func taskCallBack(conn *websocket.Conn, task TaskMsg) error {
 	}
 	err = conn.WriteMessage(
 		websocket.BinaryMessage,
-		PakoDeflate(data),
+		manager.PakoDeflate(data),
 	)
 	if err != nil {
 		fmt.Printf("Callback send error: %v\n", err)

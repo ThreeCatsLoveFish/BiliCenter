@@ -2,6 +2,7 @@ package awpush
 
 import (
 	"encoding/json"
+	"subcenter/manager"
 )
 
 type Verify struct {
@@ -20,7 +21,7 @@ func NewVerify(uid, apiKey string) []byte {
 	if err != nil {
 		return []byte("")
 	}
-	return PakoDeflate(dataStr)
+	return manager.PakoDeflate(dataStr)
 }
 
 // RawMsg represents original message
