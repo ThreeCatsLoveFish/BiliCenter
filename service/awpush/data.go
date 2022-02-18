@@ -5,6 +5,7 @@ import (
 	"subcenter/manager"
 )
 
+// Verify for awpush service
 type Verify struct {
 	Code   string `json:"code"`
 	Uid    string `json:"uid"`
@@ -24,18 +25,15 @@ func NewVerify(uid, apiKey string) []byte {
 	return manager.PakoDeflate(dataStr)
 }
 
+// AWPush will return message for tasks of both poll and lottery, and type of
+// message can be judged by check the string value of `Type`. Each message will
+// be handled by specific handler.
+// 
 // RawMsg represents original message
 type RawMsg struct {
 	Code int32       `json:"code"`
 	Type string      `json:"type"`
 	Data interface{} `json:"data"`
-}
-
-// TaskMsg represents message contain poll task
-type TaskMsg struct {
-	Code int32  `json:"code"`
-	Type string `json:"type"`
-	Data Poll   `json:"data"`
 }
 
 type AreaData struct {
@@ -56,10 +54,10 @@ type Poll struct {
 }
 
 // TaskMsg represents message contain poll task
-type AnchorMsg struct {
+type TaskMsg struct {
 	Code int32  `json:"code"`
 	Type string `json:"type"`
-	Data Anchor `json:"data"`
+	Data Poll   `json:"data"`
 }
 
 type Anchor struct {
@@ -89,8 +87,24 @@ type Anchor struct {
 	GoodsId      int32    `json:"goods_id"`
 }
 
-type Resp struct {
+// TaskMsg represents message contain poll task
+type AnchorMsg struct {
+	Code int32  `json:"code"`
+	Type string `json:"type"`
+	Data Anchor `json:"data"`
+}
+
+// Callback is used for response awpush poll task
+type Callback struct {
 	Code   string `json:"code"`
 	Uid    string `json:"uid"`
 	Secret string `json:"secret"`
+}
+
+// BiliJoinResp is the response body of joining live lottery
+type BiliJoinResp struct {
+	Code    int32       `json:"code"`
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
+	Msg     string      `json:"msg"`
 }

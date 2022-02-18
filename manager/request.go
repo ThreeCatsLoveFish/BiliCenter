@@ -43,11 +43,11 @@ func PostForm(url string, data url.Values) error {
 	return nil
 }
 
-func PostFormWithCookie(url string, data url.Values, cookie string) error {
+func PostFormWithCookie(url, cookie string, data url.Values) ([]byte, error) {
 	req, err := http.NewRequest("POST", url, strings.NewReader(data.Encode()))
 	if err != nil {
 		// FIXME: handle error
-		return err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Cookie", cookie)
@@ -58,9 +58,10 @@ func PostFormWithCookie(url string, data url.Values, cookie string) error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil || resp == nil || resp.StatusCode != 200 {
 		// FIXME: handle error
-		return err
+		return nil, err
 	}
-	resp.Body.Close()
-	// TODO: cover body content
-	return nil
+	defer resp.Body.Close()
+	buf := make([]byte, 1024)
+	size, _ := resp.Body.Read(buf)
+	return buf[:size], nil
 }
