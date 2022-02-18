@@ -5,6 +5,14 @@ import (
 	"subcenter/manager"
 )
 
+// BiliConfig store all token and cookies used for awpush and bili live
+type BiliConfig struct {
+	Uid     string   `config:"uid"`
+	Token   string   `config:"token"`
+	Wss     string   `config:"wss"`
+	Cookies []string `config:"cookies"`
+}
+
 // Verify for awpush service
 type Verify struct {
 	Code   string `json:"code"`
@@ -28,7 +36,7 @@ func NewVerify(uid, apiKey string) []byte {
 // AWPush will return message for tasks of both poll and lottery, and type of
 // message can be judged by check the string value of `Type`. Each message will
 // be handled by specific handler.
-// 
+//
 // RawMsg represents original message
 type RawMsg struct {
 	Code int32       `json:"code"`

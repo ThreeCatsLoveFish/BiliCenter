@@ -23,29 +23,29 @@ type endpoint struct {
 
 // initPush bind endpoints with config file
 func initPush() {
-	pushConf := config.NewWithOptions("push", func(opt *config.Options) {
+	conf := config.NewWithOptions("push", func(opt *config.Options) {
 		opt.DecoderConfig.TagName = "config"
 		opt.ParseEnv = true
 	})
-	pushConf.AddDriver(toml.Driver)
-	err := pushConf.LoadFiles("config/push.toml")
+	conf.AddDriver(toml.Driver)
+	err := conf.LoadFiles("config/push.toml")
 	if err != nil {
 		panic(err)
 	}
 
 	// Load config file
-	size := pushConf.Get("global.size").(int64)
+	size := conf.Get("global.size").(int64)
 	endpoints := make([]endpoint, size)
-	pushConf.BindStruct("endpoints", &endpoints)
+	conf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here
-	if !pushConf.Get("global.action").(bool) {
+	if !conf.Get("global.action").(bool) {
 		return
 	}
-	pushConf.LoadOSEnv([]string{TurboEnv, PushDeerEnv}, false)
-	turbo := pushConf.Get(TurboEnv).(string)
+	conf.LoadOSEnv([]string{TurboEnv, PushDeerEnv}, false)
+	turbo := conf.Get(TurboEnv).(string)
 	turboList, tId := strings.Split(turbo, ","), 0
-	pushDeer := pushConf.Get(PushDeerEnv).(string)
+	pushDeer := conf.Get(PushDeerEnv).(string)
 	pushDeerList, pId := strings.Split(pushDeer, ","), 0
 	for _, endpoint := range endpoints {
 		switch endpoint.Type {

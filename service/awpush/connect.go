@@ -4,8 +4,29 @@ import (
 	"fmt"
 	"subcenter/manager"
 
+	"github.com/gookit/config/v2"
+	"github.com/gookit/config/v2/toml"
 	"github.com/gorilla/websocket"
 )
+
+var biliConfig BiliConfig
+
+func init() {
+	initAWPush()
+}
+
+// initAWPush load awpush and bili config
+func initAWPush() {
+	conf := config.NewWithOptions("bili", func(opt *config.Options) {
+		opt.DecoderConfig.TagName = "config"
+	})
+	conf.AddDriver(toml.Driver)
+	err := conf.LoadFiles("config/bili.toml")
+	if err != nil {
+		panic(err)
+	}
+	conf.BindStruct("awpush", &biliConfig)
+}
 
 // ping send ping message
 func ping(conn *websocket.Conn) error {
@@ -46,10 +67,8 @@ func verify(conn *websocket.Conn, uid, token string) error {
 	return nil
 }
 
-func establish(uid, token string) (ws *websocket.Conn, err error) {
-	conn, _, err := websocket.DefaultDialer.Dial(
-		"wss://andywang.top:3001/ws", nil,
-	)
+func establish() (ws *websocket.Conn, err error) {
+	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
 	if err != nil {
 		fmt.Printf("Dial error: %v\n", err)
 		return nil, err
@@ -73,7 +92,7 @@ func establish(uid, token string) (ws *websocket.Conn, err error) {
 	if err != nil {
 		fmt.Printf("Pong failed, error: %v", err)
 	}
-	err = verify(conn, uid, token)
+	err = verify(conn, biliConfig.Uid, biliConfig.Token)
 	if err != nil {
 		fmt.Printf("Verify failed, error: %v", err)
 	}

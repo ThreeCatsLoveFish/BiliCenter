@@ -17,7 +17,7 @@ type AWPushClient struct {
 }
 
 func NewAWPushClient() AWPushClient {
-	conn, err := establish("12309253", "d9801070a9191f1da1a0925c88357fcb")
+	conn, err := establish()
 	if err != nil {
 		fmt.Printf("establish failed, error: %v", err)
 	}

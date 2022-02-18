@@ -56,7 +56,7 @@ func createTask(maker TaskMaker, takers chan Task) {
 	}
 }
 
-type taskConfig struct {
+type TaskConfig struct {
 	Init   bool   `config:"init"`
 	Pull   string `config:"pull"`
 	Push   string `config:"push"`
@@ -64,22 +64,22 @@ type taskConfig struct {
 }
 
 func getTaskMaker() []TaskMaker {
-	taskConf := config.NewWithOptions("task", func(opt *config.Options) {
+	conf := config.NewWithOptions("task", func(opt *config.Options) {
 		opt.DecoderConfig.TagName = "config"
 		opt.ParseEnv = true
 	})
-	taskConf.AddDriver(toml.Driver)
-	err := taskConf.LoadFiles("config/task.toml")
+	conf.AddDriver(toml.Driver)
+	err := conf.LoadFiles("config/task.toml")
 	if err != nil {
 		panic(err)
 	}
 
 	// Load config file
-	size := taskConf.Get("global.size").(int64)
-	conf := make([]taskConfig, size)
-	taskConf.BindStruct("tasks", &conf)
+	size := conf.Get("global.size").(int64)
+	taskConfig := make([]TaskConfig, size)
+	conf.BindStruct("tasks", &taskConfig)
 	makers := make([]TaskMaker, 0, size)
-	for _, c := range conf {
+	for _, c := range taskConfig {
 		makers = append(
 			makers,
 			NewTaskMaker(time.Duration(c.Period), c.Init, c.Pull, c.Push),
