@@ -2,6 +2,7 @@ package awpush
 
 import (
 	"fmt"
+	"log"
 	"subcenter/infra"
 	"time"
 
@@ -12,33 +13,33 @@ import (
 func Establish() (ws *websocket.Conn, err error) {
 	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
 	if err != nil {
-		fmt.Printf("Dial error: %v\n", err)
+		log.Default().Printf("Dial error: %v\n", err)
 		return nil, err
 	}
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
-		fmt.Printf("ReadMessage error: %v\n", err)
+		log.Default().Printf("ReadMessage error: %v\n", err)
 		return nil, err
 	}
 	res := string(infra.PakoInflate(msg))
 	greet := `{"code":0,"type":"WS_OPEN","data":"连接成功"}`
 	if res != greet {
-		fmt.Printf("Greeting error, obtain: %s\n", res)
+		log.Default().Printf("Greeting error, obtain: %s\n", res)
 		return nil, fmt.Errorf("greeting error, obtain: %s", res)
 	}
 	err = infra.Ping(conn)
 	if err != nil {
-		fmt.Printf("Ping failed, error: %v", err)
+		log.Default().Printf("Ping failed, error: %v", err)
 	}
 	err = infra.Pong(conn)
 	if err != nil {
-		fmt.Printf("Pong failed, error: %v", err)
+		log.Default().Printf("Pong failed, error: %v", err)
 	}
 	err = infra.Verify(conn, biliConfig.Uid, biliConfig.Token)
 	if err != nil {
-		fmt.Printf("Verify failed, error: %v", err)
+		log.Default().Printf("Verify failed, error: %v", err)
 	}
-	fmt.Println("Verify success")
+	log.Default().Println("Verify success")
 	return conn, err
 }
 
@@ -54,7 +55,7 @@ type AWPushClient struct {
 func NewAWPushClient() AWPushClient {
 	conn, err := Establish()
 	if err != nil {
-		fmt.Printf("establish failed, error: %v", err)
+		log.Default().Printf("establish failed, error: %v", err)
 	}
 	return AWPushClient{
 		conn:    conn,
@@ -68,11 +69,11 @@ func (tc *AWPushClient) Serve() {
 		select {
 		case <-tc.timeout.C:
 			if err := infra.Ping(tc.conn); err != nil {
-				fmt.Printf("send heartbeat error: %v", err)
+				log.Default().Printf("send heartbeat error: %v", err)
 			}
 		case <-tc.sleep.C:
 			if err := HandleMsg(tc.conn, tc.sleep); err != nil {
-				fmt.Printf("handle failed, error: %v", err)
+				log.Default().Printf("handle failed, error: %v", err)
 			}
 		}
 	}

@@ -1,8 +1,6 @@
 package push
 
 import (
-	"strings"
-
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"
 )
@@ -38,25 +36,14 @@ func initPush() {
 	conf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here
-	if !conf.Get("global.action").(bool) {
-		return
-	}
 	conf.LoadOSEnv([]string{TurboEnv, PushDeerEnv}, false)
-	turbo := conf.Get(TurboEnv).(string)
-	turboList, tId := strings.Split(turbo, ","), 0
-	pushDeer := conf.Get(PushDeerEnv).(string)
-	pushDeerList, pId := strings.Split(pushDeer, ","), 0
 	for _, endpoint := range endpoints {
 		switch endpoint.Type {
 		case TurboName:
-			endpoint.Token = turboList[tId]
-			tId++
 			addPush(endpoint.Name, &TurboPush{
 				endpoint: endpoint,
 			})
 		case PushDeerName:
-			endpoint.Token = pushDeerList[pId]
-			pId++
 			addPush(endpoint.Name, &PushDeerPush{
 				endpoint: endpoint,
 			})

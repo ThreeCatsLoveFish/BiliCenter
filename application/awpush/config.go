@@ -35,10 +35,9 @@ func initAWPush() {
 		pat := regexp.MustCompile(word)
 		biliConfig.Filter.WordsPat[idx] = pat
 	}
-	biliConfig.UidList = make([]int32, 0)
-	for idx, cookie := range biliConfig.Cookies {
+	for idx, user := range biliConfig.Users {
 		req := http.Request{}
-		req.Header.Set("cookie", cookie)
+		req.Header.Set("cookie", user.Cookie)
 		uid, err := req.Cookie("DedeUserID")
 		if err != nil {
 			panic("cookie error")
@@ -47,6 +46,6 @@ func initAWPush() {
 		if err != nil {
 			panic("uid parse err")
 		}
-		biliConfig.UidList[idx] = int32(num)
+		biliConfig.Users[idx].Uid = int32(num)
 	}
 }

@@ -3,6 +3,7 @@ package pull
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/url"
 	"subcenter/domain/push"
 	"subcenter/infra"
@@ -21,11 +22,12 @@ func NewBiliPull(roomid int32, uid int32) BiliPull {
 func (pull BiliPull) getAwardUser() ([]byte, error) {
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Check"
 	params := url.Values{
-		"roomid": []string{fmt.Sprint(pull)},
+		"roomid": []string{fmt.Sprint(pull.roomid)},
 	}
 	data, err := infra.GetWithParams(rawUrl, params)
 	if err != nil {
 		// FIXME: add log here
+		log.Default().Printf("GetWithParams error: %v", err)
 		return nil, err
 	}
 	return data, err
@@ -36,11 +38,13 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 	body, err := pull.getAwardUser()
 	if err != nil {
 		// FIXME: add log here
+		log.Default().Printf("getAwardUser error: %v", err)
 		return nil, err
 	}
 	var resp dto.BiliAnchorResp
 	if err = json.Unmarshal(body, &resp); err != nil {
 		// FIXME: add log here
+		log.Default().Printf("Unmarshal BiliAnchorResp error: %v", err)
 		return nil, err
 	}
 	for _, user := range resp.Data.AwardUsers {

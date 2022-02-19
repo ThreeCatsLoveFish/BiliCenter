@@ -3,6 +3,7 @@ package infra
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"subcenter/infra/dto"
 
 	"github.com/gorilla/websocket"
@@ -15,7 +16,7 @@ func Ping(conn *websocket.Conn) error {
 		[]byte("ping"),
 	)
 	if err != nil {
-		fmt.Printf("Ping error: %v\n", err)
+		log.Default().Printf("Ping error: %v\n", err)
 	}
 	return err
 }
@@ -24,11 +25,11 @@ func Ping(conn *websocket.Conn) error {
 func Pong(conn *websocket.Conn) error {
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
-		fmt.Printf("ReadMessage error: %v\n", err)
+		log.Default().Printf("ReadMessage error: %v\n", err)
 		return nil
 	}
 	if string(msg) == "pong" {
-		fmt.Printf("Pong received, reset status\n")
+		log.Default().Printf("Pong received, reset status\n")
 		return nil
 	}
 	return fmt.Errorf("no pong received")
@@ -43,12 +44,12 @@ func Verify(conn *websocket.Conn, uid, apiKey string) error {
 	}
 	dataStr, err := json.Marshal(data)
 	if err != nil {
-		fmt.Printf("Marshal error: %v\n", err)
+		log.Default().Printf("Marshal error: %v\n", err)
 		return err
 	}
 	err = conn.WriteMessage(websocket.BinaryMessage, PakoDeflate(dataStr))
 	if err != nil {
-		fmt.Printf("Verify error: %v\n", err)
+		log.Default().Printf("Verify error: %v\n", err)
 		return err
 	}
 	return nil
