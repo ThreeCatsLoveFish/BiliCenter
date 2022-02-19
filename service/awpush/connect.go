@@ -4,29 +4,8 @@ import (
 	"fmt"
 	"subcenter/manager"
 
-	"github.com/gookit/config/v2"
-	"github.com/gookit/config/v2/toml"
 	"github.com/gorilla/websocket"
 )
-
-var biliConfig BiliConfig
-
-func init() {
-	initAWPush()
-}
-
-// initAWPush load awpush and bili config
-func initAWPush() {
-	conf := config.NewWithOptions("bili", func(opt *config.Options) {
-		opt.DecoderConfig.TagName = "config"
-	})
-	conf.AddDriver(toml.Driver)
-	err := conf.LoadFiles("config/bili.toml")
-	if err != nil {
-		panic(err)
-	}
-	conf.BindStruct("awpush", &biliConfig)
-}
 
 // ping send ping message
 func ping(conn *websocket.Conn) error {

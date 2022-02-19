@@ -36,7 +36,7 @@ func (tc *AWPushClient) Serve() {
 				fmt.Printf("send heartbeat error: %v", err)
 			}
 		case <-tc.sleep.C:
-			if err := handleMsg(tc.conn, tc.sleep); err != nil {
+			if err := HandleMsg(tc.conn, tc.sleep); err != nil {
 				fmt.Printf("handle failed, error: %v", err)
 			}
 		}

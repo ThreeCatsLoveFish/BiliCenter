@@ -15,8 +15,8 @@ type Handler func(*websocket.Conn, []byte, *time.Timer) error
 var handlerMap map[string]Handler
 
 func init() {
-	registerHandler("HAND_OUT_TASKS", handleTasks)
-	registerHandler("HAND_OUT_ANCHOR_DATA", handleAnchorData)
+	registerHandler("HAND_OUT_TASKS", HandleTasks)
+	registerHandler("HAND_OUT_ANCHOR_DATA", HandleAnchorData)
 }
 
 func registerHandler(name string, handler Handler) {
@@ -36,7 +36,7 @@ func getHandler(name string) Handler {
 	}
 }
 
-func handleMsg(conn *websocket.Conn, timer *time.Timer) error {
+func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
 		fmt.Printf("ReadMessage error: %v\n", err)
@@ -44,16 +44,13 @@ func handleMsg(conn *websocket.Conn, timer *time.Timer) error {
 	}
 	// Process pong signal
 	if string(msg) == "pong" {
-		fmt.Printf("Pong received, reset status\n")
 		timer.Reset(time.Second)
 		return nil
 	}
 	// Obtain raw data bytes
 	raw := manager.PakoInflate(msg)
 	var rawMsg RawMsg
-	fmt.Printf("Receive msg: %s\n", string(raw))
-	err = json.Unmarshal(raw, &rawMsg)
-	if err != nil {
+	if err = json.Unmarshal(raw, &rawMsg); err != nil {
 		fmt.Printf("Unmarshal error, raw data: %v, error: %v\n", raw, err)
 		return err
 	}
@@ -91,8 +88,8 @@ func taskCallBack(conn *websocket.Conn, task TaskMsg) error {
 	return nil
 }
 
-// handleTasks deal with poll task message
-func handleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
+// HandleTasks deal with poll task message
+func HandleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 	var task TaskMsg
 	if err := json.Unmarshal(msg, &task); err != nil {
 		fmt.Printf("Unmarshal TaskMsg error: %v, raw data: %s\n", err, string(msg))
@@ -103,9 +100,33 @@ func handleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 	return nil
 }
 
-// joinLottery attend the bilibili live lottery
-func joinLottery(conn *websocket.Conn, anchor AnchorMsg) {
-	// TODO: Precheck
+// filterCheckLottery abort blacklist lottery
+func filterCheckLottery(anchor AnchorMsg) bool {
+	// Need to send gift
+	if len(anchor.Data.GiftName) > 0 {
+		return true
+	}
+	// Award is meaningless
+	for _, pat := range biliConfig.Filter.WordsPat {
+		if pat.MatchString(anchor.Data.AwardName) {
+			return true
+		}
+	}
+	// Live room is not safe
+	for _, id := range biliConfig.Filter.Rooms {
+		if anchor.Data.RoomId == id {
+			return true
+		}
+	}
+	// Safe lottery
+	return false
+}
+
+// biliJoinLottery join bilibili live lottery
+func biliJoinLottery(conn *websocket.Conn, anchor AnchorMsg) {
+	if filterCheckLottery(anchor) {
+		return
+	}
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Join"
 	data := url.Values{
 		"id":       []string{fmt.Sprint(anchor.Data.Id)},
@@ -121,19 +142,18 @@ func joinLottery(conn *websocket.Conn, anchor AnchorMsg) {
 		if err = json.Unmarshal(body, &resp); err != nil {
 			fmt.Printf("Unmarshal BiliJoinResp error: %v, raw data: %v\n", err, body)
 		}
-		fmt.Printf("Response: %v", resp)
+		fmt.Printf("Lottery: %v, Response: %v", anchor, resp)
 	}
 }
 
-// handleAnchorData deal with anchor lottery message
-func handleAnchorData(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
+// HandleAnchorData deal with anchor lottery message
+func HandleAnchorData(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 	var anchor AnchorMsg
-	err := json.Unmarshal(msg, &anchor)
-	if err != nil {
+	if err := json.Unmarshal(msg, &anchor); err != nil {
 		fmt.Printf("Unmarshal AnchorMsg error: %v, raw data: %s\n", err, string(msg))
 		return err
 	}
 	timer.Reset(time.Second)
-	go joinLottery(conn, anchor)
+	go biliJoinLottery(conn, anchor)
 	return nil
 }
