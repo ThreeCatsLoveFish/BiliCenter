@@ -56,7 +56,7 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 		}
 	}
 	if len(data) == 0 {
-		log.Default().Printf("Lottery id %d no award", resp.Data.Id)
+		log.Default().Printf("[INFO] Lottery id %d no award", resp.Data.Id)
 	}
 	return data, nil
 }

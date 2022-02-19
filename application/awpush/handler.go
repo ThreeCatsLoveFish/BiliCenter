@@ -83,10 +83,7 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 		log.Default().Printf("Marshal error: %v\n", err)
 		return err
 	}
-	err = conn.WriteMessage(
-		websocket.BinaryMessage,
-		infra.PakoDeflate(data),
-	)
+	err = conn.WriteMessage(websocket.BinaryMessage, infra.PakoDeflate(data))
 	if err != nil {
 		log.Default().Printf("Callback send error: %v\n", err)
 		return err
@@ -146,9 +143,13 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 		}
 		var resp dto.BiliBaseResp
 		if err = json.Unmarshal(body, &resp); err != nil {
-			log.Default().Printf("Unmarshal BiliJoinResp error: %v, raw data: %v\n", err, body)
+			log.Default().Printf("Unmarshal BiliBaseResp error: %v, raw data: %v\n", err, body)
 		}
-		log.Default().Printf("[INFO] Lottery: %d, Response: %v", anchor.Data.Id, resp)
+		if resp.Code == 0 {
+			log.Default().Printf("[INFO] Join lottery: %d success", anchor.Data.Id)
+		} else {
+			log.Default().Printf("[INFO] Join lottery: %d error: %s", anchor.Data.Id, resp.Message)
+		}
 		task := application.Task{
 			Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
 			Push: push.NewPush(user.Push),
