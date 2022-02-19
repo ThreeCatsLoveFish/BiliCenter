@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"subcenter/application"
+	"subcenter/domain"
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
 	"subcenter/infra"
@@ -150,13 +150,13 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 		} else {
 			log.Default().Printf("[INFO] Join lottery: %d error: %s", anchor.Data.Id, resp.Message)
 		}
-		task := application.Task{
+		go func(task domain.Task, timer *time.Timer) {
+			<-timer.C
+			task.Execute()
+		}(domain.Task{
 			Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
 			Push: push.NewPush(user.Push),
-		}
-		go application.GlobalTaskCenter.ExecuteDelay(
-			task, time.Duration(anchor.Data.Time+5)*time.Second,
-		)
+		}, time.NewTimer(time.Duration(anchor.Data.Time+5)*time.Second))
 	}
 }
 

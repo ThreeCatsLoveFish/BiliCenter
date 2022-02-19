@@ -1,4 +1,4 @@
-package application
+package domain
 
 import (
 	"log"
@@ -9,12 +9,6 @@ import (
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"
 )
-
-var GlobalTaskCenter TaskCenter
-
-func init() {
-	GlobalTaskCenter = NewTaskCenter()
-}
 
 type Task struct {
 	pull.Pull
@@ -103,13 +97,6 @@ type TaskCenter struct {
 func NewTaskCenter() TaskCenter {
 	makers := getTaskMaker()
 	return TaskCenter{makers, make(chan Task, len(makers))}
-}
-
-// Add will send new task to task center and it will be executed only once
-func (tc *TaskCenter) ExecuteDelay(task Task, dur time.Duration) {
-	timer := time.NewTimer(dur)
-	<-timer.C
-	task.Execute()
 }
 
 // Run will block and execute all incoming tasks
