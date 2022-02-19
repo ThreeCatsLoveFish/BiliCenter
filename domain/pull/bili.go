@@ -53,6 +53,8 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 					resp.Data.RoomId, resp.Data.AwardName,
 				),
 			})
+			log.Default().Printf("[LUCK] User %d get award %s",
+				user.Uid, resp.Data.AwardName)
 		}
 	}
 	if len(data) == 0 {
