@@ -39,7 +39,7 @@ func Establish() (ws *websocket.Conn, err error) {
 	if err != nil {
 		log.Default().Printf("Verify failed, error: %v", err)
 	}
-	log.Default().Println("Verify success")
+	log.Default().Println("[INFO] AwPush Verify success")
 	return conn, err
 }
 

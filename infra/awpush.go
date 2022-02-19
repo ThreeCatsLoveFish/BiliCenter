@@ -11,14 +11,7 @@ import (
 
 // Ping send Ping message
 func Ping(conn *websocket.Conn) error {
-	err := conn.WriteMessage(
-		websocket.TextMessage,
-		[]byte("ping"),
-	)
-	if err != nil {
-		log.Default().Printf("Ping error: %v\n", err)
-	}
-	return err
+	return conn.WriteMessage(websocket.TextMessage, []byte("ping"))
 }
 
 // Pong receive Pong message
@@ -29,7 +22,6 @@ func Pong(conn *websocket.Conn) error {
 		return nil
 	}
 	if string(msg) == "pong" {
-		log.Default().Printf("Pong received, reset status\n")
 		return nil
 	}
 	return fmt.Errorf("no pong received")
