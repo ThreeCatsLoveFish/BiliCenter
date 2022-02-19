@@ -45,11 +45,12 @@ func getHandler(name string) Handler {
 func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
-		log.Default().Printf("ReadMessage error: %v\n", err)
+		log.Default().Printf("ReadMessage error: %v", err)
 		return nil
 	}
 	// Process pong signal
 	if string(msg) == "pong" {
+		log.Default().Printf("[DEBUG] Heartbeat received")
 		timer.Reset(time.Second)
 		return nil
 	}
@@ -57,7 +58,7 @@ func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 	raw := infra.PakoInflate(msg)
 	var rawMsg dto.RawMsg
 	if err = json.Unmarshal(raw, &rawMsg); err != nil {
-		log.Default().Printf("Unmarshal error, raw data: %v, error: %v\n", raw, err)
+		log.Default().Printf("Unmarshal error, raw data: %v, error: %v", raw, err)
 		return err
 	}
 	if rawMsg.Code != 0 {
@@ -80,12 +81,12 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 	}
 	data, err := json.Marshal(resp)
 	if err != nil {
-		log.Default().Printf("Marshal error: %v\n", err)
+		log.Default().Printf("Marshal error: %v", err)
 		return err
 	}
 	err = conn.WriteMessage(websocket.BinaryMessage, infra.PakoDeflate(data))
 	if err != nil {
-		log.Default().Printf("Callback send error: %v\n", err)
+		log.Default().Printf("Callback send error: %v", err)
 		return err
 	}
 	return nil
@@ -95,7 +96,7 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 func HandleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 	var task dto.TaskMsg
 	if err := json.Unmarshal(msg, &task); err != nil {
-		log.Default().Printf("Unmarshal TaskMsg error: %v, raw data: %s\n", err, string(msg))
+		log.Default().Printf("Unmarshal TaskMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
 	timer.Reset(time.Duration(task.Data.SleepTime) * time.Millisecond)
@@ -138,17 +139,19 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 	for _, user := range biliConfig.Users {
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
-			log.Default().Printf("PostFormWithCookie error: %v, raw data: %v\n", err, data)
+			log.Default().Printf("PostFormWithCookie error: %v, raw data: %v", err, data)
 			continue
 		}
 		var resp dto.BiliBaseResp
 		if err = json.Unmarshal(body, &resp); err != nil {
-			log.Default().Printf("Unmarshal BiliBaseResp error: %v, raw data: %v\n", err, body)
+			log.Default().Printf("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
 		}
 		if resp.Code == 0 {
-			log.Default().Printf("[INFO] Join lottery: %d success", anchor.Data.Id)
+			log.Default().Printf("[INFO] User %d join lottery %d success",
+				user.Uid, anchor.Data.Id)
 		} else {
-			log.Default().Printf("[INFO] Join lottery: %d error: %s", anchor.Data.Id, resp.Message)
+			log.Default().Printf("[INFO] User %d join lottery %d error: %s",
+				user.Uid, anchor.Data.Id, resp.Message)
 		}
 		go func(task domain.Task, timer *time.Timer) {
 			<-timer.C
@@ -164,7 +167,7 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 func HandleAnchorData(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 	var anchor dto.AnchorMsg
 	if err := json.Unmarshal(msg, &anchor); err != nil {
-		log.Default().Printf("Unmarshal AnchorMsg error: %v, raw data: %s\n", err, string(msg))
+		log.Default().Printf("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
 	timer.Reset(time.Second)

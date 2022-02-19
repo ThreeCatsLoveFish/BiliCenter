@@ -13,18 +13,18 @@ import (
 func Establish() (ws *websocket.Conn, err error) {
 	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
 	if err != nil {
-		log.Default().Printf("Dial error: %v\n", err)
+		log.Default().Printf("Dial error: %v", err)
 		return nil, err
 	}
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
-		log.Default().Printf("ReadMessage error: %v\n", err)
+		log.Default().Printf("ReadMessage error: %v", err)
 		return nil, err
 	}
 	res := string(infra.PakoInflate(msg))
 	greet := `{"code":0,"type":"WS_OPEN","data":"连接成功"}`
 	if res != greet {
-		log.Default().Printf("Greeting error, obtain: %s\n", res)
+		log.Default().Printf("Greeting error, obtain: %s", res)
 		return nil, fmt.Errorf("greeting error, obtain: %s", res)
 	}
 	err = infra.Ping(conn)
@@ -70,7 +70,9 @@ func (tc *AWPushClient) Serve() {
 		case <-tc.timeout.C:
 			if err := infra.Ping(tc.conn); err != nil {
 				log.Default().Printf("send heartbeat error: %v", err)
+				continue
 			}
+			log.Default().Printf("[DEBUG] Heartbeat sent")
 		case <-tc.sleep.C:
 			if err := HandleMsg(tc.conn, tc.sleep); err != nil {
 				log.Default().Printf("handle failed, error: %v", err)
