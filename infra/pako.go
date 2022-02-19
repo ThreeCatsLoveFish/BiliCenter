@@ -1,4 +1,4 @@
-package manager
+package infra
 
 import (
 	"bytes"

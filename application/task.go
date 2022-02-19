@@ -1,13 +1,19 @@
-package task
+package application
 
 import (
-	"subcenter/service/pull"
-	"subcenter/service/push"
+	"subcenter/domain/pull"
+	"subcenter/domain/push"
 	"time"
 
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"
 )
+
+var GlobalTaskCenter TaskCenter
+
+func init() {
+	GlobalTaskCenter = NewTaskCenter()
+}
 
 type Task struct {
 	pull.Pull
@@ -75,10 +81,9 @@ func getTaskMaker() []TaskMaker {
 	}
 
 	// Load config file
-	size := conf.Get("global.size").(int64)
-	taskConfig := make([]TaskConfig, size)
+	var taskConfig []TaskConfig
 	conf.BindStruct("tasks", &taskConfig)
-	makers := make([]TaskMaker, 0, size)
+	makers := make([]TaskMaker, 0)
 	for _, c := range taskConfig {
 		makers = append(
 			makers,
@@ -100,11 +105,20 @@ func NewTaskCenter() TaskCenter {
 	return TaskCenter{makers, wait}
 }
 
+// Add will send new task to task center and it will be executed only once
+func (tc *TaskCenter) Add(task Task) {
+	tc.takers <- task
+}
+
+// Add will send new task to task center and it will be executed only once
+func (tc *TaskCenter) AddDelay(task Task, dur time.Duration) {
+	timer := time.NewTimer(dur)
+	<-timer.C
+	tc.takers <- task
+}
+
 // Run will block and execute all incoming tasks
 func (tc *TaskCenter) Run() {
-	if len(tc.makers) <= 0 {
-		return
-	}
 	for _, maker := range tc.makers {
 		go createTask(maker, tc.takers)
 	}

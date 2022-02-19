@@ -1,4 +1,4 @@
-package manager
+package infra
 
 import (
 	"io/ioutil"
@@ -51,10 +51,10 @@ func PostFormWithCookie(url, cookie string, data url.Values) ([]byte, error) {
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Cookie", cookie)
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
-	req.Header.Add("Accept-Encoding", "gzip, deflate, br")
-	req.Header.Add("Connection", "keep-alive")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Connection", "keep-alive")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil || resp == nil || resp.StatusCode != 200 {
 		// FIXME: handle error

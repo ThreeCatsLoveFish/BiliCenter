@@ -1,7 +1,7 @@
 package pull
 
 import (
-	"subcenter/service/push"
+	"subcenter/domain/push"
 	"time"
 )
 

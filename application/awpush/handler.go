@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"subcenter/manager"
+	"subcenter/application"
+	"subcenter/domain/pull"
+	"subcenter/domain/push"
+	"subcenter/infra"
+	"subcenter/infra/dto"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -36,6 +40,7 @@ func getHandler(name string) Handler {
 	}
 }
 
+// HandleMsg deal with all kinds of message
 func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
@@ -48,8 +53,8 @@ func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 		return nil
 	}
 	// Obtain raw data bytes
-	raw := manager.PakoInflate(msg)
-	var rawMsg RawMsg
+	raw := infra.PakoInflate(msg)
+	var rawMsg dto.RawMsg
 	if err = json.Unmarshal(raw, &rawMsg); err != nil {
 		fmt.Printf("Unmarshal error, raw data: %v, error: %v\n", raw, err)
 		return err
@@ -62,12 +67,12 @@ func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 }
 
 // taskCallBack send callback response
-func taskCallBack(conn *websocket.Conn, task TaskMsg) error {
+func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 	// Sleep before execute
 	timer := time.NewTimer(time.Duration(task.Data.SleepTime) * time.Millisecond)
 	<-timer.C
 	// Send callback message
-	resp := Callback{
+	resp := dto.Callback{
 		Code:   "GET_TASK",
 		Uid:    biliConfig.Uid,
 		Secret: task.Data.Secret,
@@ -79,7 +84,7 @@ func taskCallBack(conn *websocket.Conn, task TaskMsg) error {
 	}
 	err = conn.WriteMessage(
 		websocket.BinaryMessage,
-		manager.PakoDeflate(data),
+		infra.PakoDeflate(data),
 	)
 	if err != nil {
 		fmt.Printf("Callback send error: %v\n", err)
@@ -90,7 +95,7 @@ func taskCallBack(conn *websocket.Conn, task TaskMsg) error {
 
 // HandleTasks deal with poll task message
 func HandleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
-	var task TaskMsg
+	var task dto.TaskMsg
 	if err := json.Unmarshal(msg, &task); err != nil {
 		fmt.Printf("Unmarshal TaskMsg error: %v, raw data: %s\n", err, string(msg))
 		return err
@@ -101,7 +106,7 @@ func HandleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
 }
 
 // filterCheckLottery abort blacklist lottery
-func filterCheckLottery(anchor AnchorMsg) bool {
+func filterCheckLottery(anchor dto.AnchorMsg) bool {
 	// Need to send gift
 	if len(anchor.Data.GiftName) > 0 {
 		return true
@@ -122,8 +127,8 @@ func filterCheckLottery(anchor AnchorMsg) bool {
 	return false
 }
 
-// biliJoinLottery join bilibili live lottery
-func biliJoinLottery(conn *websocket.Conn, anchor AnchorMsg) {
+// joinLottery refers to bilibili live lottery
+func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 	if filterCheckLottery(anchor) {
 		return
 	}
@@ -132,28 +137,35 @@ func biliJoinLottery(conn *websocket.Conn, anchor AnchorMsg) {
 		"id":       []string{fmt.Sprint(anchor.Data.Id)},
 		"platform": []string{"pc"},
 	}
-	for _, cookie := range biliConfig.Cookies {
-		body, err := manager.PostFormWithCookie(rawUrl, cookie, data)
+	for idx, cookie := range biliConfig.Cookies {
+		body, err := infra.PostFormWithCookie(rawUrl, cookie, data)
 		if err != nil {
 			fmt.Printf("PostFormWithCookie error: %v, raw data: %v\n", err, data)
 			continue
 		}
-		var resp BiliJoinResp
+		var resp dto.BiliBaseResp
 		if err = json.Unmarshal(body, &resp); err != nil {
 			fmt.Printf("Unmarshal BiliJoinResp error: %v, raw data: %v\n", err, body)
 		}
 		fmt.Printf("Lottery: %v, Response: %v", anchor, resp)
+		task := application.Task{
+			Pull: pull.NewBiliPull(anchor.Data.RoomId, biliConfig.UidList[idx]),
+			Push: push.NewPush("threecats"),
+		}
+		go application.GlobalTaskCenter.AddDelay(
+			task, time.Duration(anchor.Data.Time)*time.Second,
+		)
 	}
 }
 
 // HandleAnchorData deal with anchor lottery message
 func HandleAnchorData(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
-	var anchor AnchorMsg
+	var anchor dto.AnchorMsg
 	if err := json.Unmarshal(msg, &anchor); err != nil {
 		fmt.Printf("Unmarshal AnchorMsg error: %v, raw data: %s\n", err, string(msg))
 		return err
 	}
 	timer.Reset(time.Second)
-	go biliJoinLottery(conn, anchor)
+	go joinLottery(conn, anchor)
 	return nil
 }

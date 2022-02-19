@@ -1,8 +1,11 @@
 [awpush]
-cookies = []
-token = "d9801070a9191f1da1a0925c88357fcb"
-uid = "12309253"
+token = ""
+uid = ""
 wss = "wss://andywang.top:3001/ws"
+
+[awpush.anchor]
+cookies = [""]
+push = ["test"]
 
 [awpush.filter]
 rooms = [48443, 58121, 66634, 74571, 195958, 256432, 284165, 295476, 398166, 785541, 1065100, 1154214, 23030962, 21229753, 22489675]

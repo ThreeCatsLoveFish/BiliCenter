@@ -34,8 +34,7 @@ func initPush() {
 	}
 
 	// Load config file
-	size := conf.Get("global.size").(int64)
-	endpoints := make([]endpoint, size)
+	var endpoints []endpoint
 	conf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here

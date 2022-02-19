@@ -3,7 +3,7 @@ package push
 import (
 	"fmt"
 	"net/url"
-	"subcenter/manager"
+	"subcenter/infra"
 )
 
 const (
@@ -25,5 +25,5 @@ func (push TurboPush) Submit(pd Data) error {
 		"desp":  []string{pd.Content},
 	}
 	// Submit info
-	return manager.PostForm(rawUrl, data)
+	return infra.PostForm(rawUrl, data)
 }

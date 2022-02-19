@@ -1,13 +1,12 @@
 package main
 
 import (
-	// "subcenter/service/task"
-	"subcenter/service/awpush"
+	"subcenter/application"
+	"subcenter/application/awpush"
 )
 
 func main() {
-	// tc := task.NewTaskCenter()
-	// tc.Run()
+	application.GlobalTaskCenter.Run()
 
 	client := awpush.NewAWPushClient()
 	client.Serve()

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-	"subcenter/manager"
-	"subcenter/service/push"
+	"subcenter/domain/push"
+	"subcenter/infra"
 	"time"
 
 	"github.com/gookit/config/v2"
@@ -91,7 +91,7 @@ func (EastMoneyPull) getData(secId string) (*StockData, error) {
 		"fields": []string{"f43,f44,f45,f46,f47,f48,f50,f51,f52,f57,f58,f60,f168"},
 		"secid":  []string{secId},
 	}
-	data, err := manager.GetWithParams(rawUrl, params)
+	data, err := infra.GetWithParams(rawUrl, params)
 	if err != nil {
 		// FIXME: add log here
 		return nil, err

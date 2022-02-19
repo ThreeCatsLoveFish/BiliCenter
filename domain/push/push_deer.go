@@ -2,7 +2,7 @@ package push
 
 import (
 	"net/url"
-	"subcenter/manager"
+	"subcenter/infra"
 )
 
 const (
@@ -20,9 +20,9 @@ func (push PushDeerPush) Submit(pd Data) error {
 	// Prepare content and header
 	data := url.Values{
 		"pushkey": []string{push.Token},
-		"text": []string{pd.Title},
-		"desp":  []string{pd.Content},
+		"text":    []string{pd.Title},
+		"desp":    []string{pd.Content},
 	}
 	// Submit info
-	return manager.PostForm(push.URL, data)
+	return infra.PostForm(push.URL, data)
 }
