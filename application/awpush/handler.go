@@ -148,7 +148,7 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 		if err = json.Unmarshal(body, &resp); err != nil {
 			log.Default().Printf("Unmarshal BiliJoinResp error: %v, raw data: %v\n", err, body)
 		}
-		log.Default().Printf("[INFO] Lottery: %v, Response: %v", anchor, resp)
+		log.Default().Printf("[INFO] Lottery: %d, Response: %v", anchor.Data.Id, resp)
 		task := application.Task{
 			Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
 			Push: push.NewPush(user.Push),

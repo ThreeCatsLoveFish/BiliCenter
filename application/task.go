@@ -1,6 +1,7 @@
 package application
 
 import (
+	"log"
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
 	"time"
@@ -23,7 +24,7 @@ type Task struct {
 func (task Task) Execute() {
 	dataList, err := task.Obtain()
 	if err != nil {
-		// TODO: add log here
+		log.Default().Printf("Obtain error: %v", err)
 		return
 	}
 	for _, data := range dataList {

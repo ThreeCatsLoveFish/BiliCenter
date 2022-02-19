@@ -26,7 +26,6 @@ func (pull BiliPull) getAwardUser() ([]byte, error) {
 	}
 	data, err := infra.GetWithParams(rawUrl, params)
 	if err != nil {
-		// FIXME: add log here
 		log.Default().Printf("GetWithParams error: %v", err)
 		return nil, err
 	}
@@ -37,13 +36,11 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 	var data []push.Data
 	body, err := pull.getAwardUser()
 	if err != nil {
-		// FIXME: add log here
 		log.Default().Printf("getAwardUser error: %v", err)
 		return nil, err
 	}
 	var resp dto.BiliAnchorResp
 	if err = json.Unmarshal(body, &resp); err != nil {
-		// FIXME: add log here
 		log.Default().Printf("Unmarshal BiliAnchorResp error: %v", err)
 		return nil, err
 	}
@@ -57,6 +54,9 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 				),
 			})
 		}
+	}
+	if len(data) == 0 {
+		log.Default().Printf("Lottery id %d no award", resp.Data.Id)
 	}
 	return data, nil
 }

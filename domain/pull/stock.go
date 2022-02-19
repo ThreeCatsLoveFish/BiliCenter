@@ -3,6 +3,7 @@ package pull
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/url"
 	"strings"
 	"subcenter/domain/push"
@@ -93,16 +94,15 @@ func (EastMoneyPull) getData(secId string) (*StockData, error) {
 	}
 	data, err := infra.GetWithParams(rawUrl, params)
 	if err != nil {
-		// FIXME: add log here
+		log.Default().Printf("GetWithParams error: %v", err)
 		return nil, err
 	}
 	type resBody struct {
 		Data StockData `json:"data"`
 	}
 	var b resBody
-	err = json.Unmarshal(data, &b)
-	if err != nil {
-		// FIXME: add log here
+	if err = json.Unmarshal(data, &b); err != nil {
+		log.Default().Printf("Unmarshal error: %v", err)
 		return nil, err
 	}
 	return &b.Data, nil
@@ -113,7 +113,7 @@ func (pull EastMoneyPull) Obtain() ([]push.Data, error) {
 	for _, stock := range pull.stockList {
 		stock, err := pull.getData(stock)
 		if err != nil {
-			// FIXME: add log here
+			log.Default().Printf("getData error: %v", err)
 			continue
 		}
 		data = append(data, push.Data{
