@@ -101,24 +101,21 @@ type TaskCenter struct {
 // NewTaskCenter initialize the task center
 func NewTaskCenter() TaskCenter {
 	makers := getTaskMaker()
-	wait := make(chan Task, len(makers))
-	return TaskCenter{makers, wait}
+	return TaskCenter{makers, make(chan Task, len(makers))}
 }
 
 // Add will send new task to task center and it will be executed only once
-func (tc *TaskCenter) Add(task Task) {
-	tc.takers <- task
-}
-
-// Add will send new task to task center and it will be executed only once
-func (tc *TaskCenter) AddDelay(task Task, dur time.Duration) {
+func (tc *TaskCenter) ExecuteDelay(task Task, dur time.Duration) {
 	timer := time.NewTimer(dur)
 	<-timer.C
-	tc.takers <- task
+	task.Execute()
 }
 
 // Run will block and execute all incoming tasks
 func (tc *TaskCenter) Run() {
+	if len(tc.makers) <= 0 {
+		return
+	}
 	for _, maker := range tc.makers {
 		go createTask(maker, tc.takers)
 	}

@@ -153,7 +153,7 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 			Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
 			Push: push.NewPush(user.Push),
 		}
-		go application.GlobalTaskCenter.AddDelay(
+		go application.GlobalTaskCenter.ExecuteDelay(
 			task, time.Duration(anchor.Data.Time)*time.Second,
 		)
 	}
