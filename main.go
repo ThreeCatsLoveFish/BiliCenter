@@ -5,15 +5,18 @@ import (
 	"os"
 	"subcenter/application"
 	"subcenter/application/awpush"
+	"time"
 )
 
 // initLog initialize default logger
 func initLog() {
-	logFile, err := os.Create("output/log.txt")
+	now := time.Now().Format("2006_01_02.15")
+	logFile, err := os.Create("output/subcenter.log." + now)
 	if err != nil {
 		panic("create log file error")
 	}
 	log.Default().SetOutput(logFile)
+	log.Default().SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 }
 
 func main() {
