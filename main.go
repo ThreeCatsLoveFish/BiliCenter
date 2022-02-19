@@ -9,7 +9,8 @@ import (
 
 // initLog initialize default logger
 func initLog() {
-	logFile, err := os.OpenFile("output/subcenter.log", os.O_APPEND|os.O_CREATE, 0666)
+	logFile, err := os.OpenFile("output/subcenter.log",
+		os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		panic("create log file error")
 	}
