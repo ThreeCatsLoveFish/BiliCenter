@@ -36,7 +36,7 @@ func initAWPush() {
 		biliConfig.Filter.WordsPat[idx] = pat
 	}
 	for idx, user := range biliConfig.Users {
-		req := http.Request{}
+		req := http.Request{Header: map[string][]string{}}
 		req.Header.Set("cookie", user.Cookie)
 		uid, err := req.Cookie("DedeUserID")
 		if err != nil {
