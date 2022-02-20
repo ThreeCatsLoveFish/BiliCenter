@@ -10,12 +10,13 @@ import (
 	"subcenter/domain/push"
 	"subcenter/infra"
 	"subcenter/infra/dto"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
 
-type Handler func(*websocket.Conn, []byte, *time.Timer) error
+type Handler func(*AWPushClient, []byte) error
 
 var handlerMap map[string]Handler
 
@@ -35,15 +36,15 @@ func getHandler(name string) Handler {
 	if handler, ok := handlerMap[name]; ok {
 		return handler
 	}
-	return func(_ *websocket.Conn, _ []byte, timer *time.Timer) error {
-		timer.Reset(time.Second)
+	return func(client *AWPushClient, _ []byte) error {
+		client.sleep.Reset(time.Microsecond)
 		return nil
 	}
 }
 
 // HandleMsg deal with all kinds of message
-func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
-	_, msg, err := conn.ReadMessage()
+func HandleMsg(client *AWPushClient) error {
+	_, msg, err := client.conn.ReadMessage()
 	if err != nil {
 		log.Default().Printf("ReadMessage error: %v", err)
 		return nil
@@ -51,7 +52,7 @@ func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 	// Process pong signal
 	if string(msg) == "pong" {
 		log.Default().Printf("[DEBUG] Heartbeat received")
-		timer.Reset(time.Second)
+		client.sleep.Reset(time.Microsecond)
 		return nil
 	}
 	// Obtain raw data bytes
@@ -65,7 +66,7 @@ func HandleMsg(conn *websocket.Conn, timer *time.Timer) error {
 		log.Default().Printf("Server code not zero, error exist!")
 	}
 	// Handle each kind of message
-	return getHandler(rawMsg.Type)(conn, raw, timer)
+	return getHandler(rawMsg.Type)(client, raw)
 }
 
 // taskCallBack send callback response
@@ -93,14 +94,14 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 }
 
 // HandleTasks deal with poll task message
-func HandleTasks(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
+func HandleTasks(client *AWPushClient, msg []byte) error {
 	var task dto.TaskMsg
 	if err := json.Unmarshal(msg, &task); err != nil {
 		log.Default().Printf("Unmarshal TaskMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
-	timer.Reset(time.Duration(task.Data.SleepTime) * time.Millisecond)
-	go taskCallBack(conn, task)
+	client.sleep.Reset(time.Duration(task.Data.SleepTime) * time.Millisecond)
+	go taskCallBack(client.conn, task)
 	return nil
 }
 
@@ -127,7 +128,7 @@ func filterCheckLottery(anchor dto.AnchorMsg) bool {
 }
 
 // joinLottery refers to bilibili live lottery
-func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
+func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 	if filterCheckLottery(anchor) {
 		return
 	}
@@ -149,28 +150,30 @@ func joinLottery(conn *websocket.Conn, anchor dto.AnchorMsg) {
 		if resp.Code == 0 {
 			log.Default().Printf("[INFO] User %d join lottery %d success",
 				user.Uid, anchor.Data.Id)
+			atomic.AddInt32(&client.join, 1)
+			go func(task domain.Task, timer *time.Timer) {
+				<-timer.C
+				task.Execute()
+			}(domain.Task{
+				Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
+				Push: push.NewPush(user.Push),
+			}, time.NewTimer(time.Duration(anchor.Data.Time+5)*time.Second))
 		} else {
 			log.Default().Printf("[INFO] User %d join lottery %d error: %s",
 				user.Uid, anchor.Data.Id, resp.Message)
 		}
-		go func(task domain.Task, timer *time.Timer) {
-			<-timer.C
-			task.Execute()
-		}(domain.Task{
-			Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
-			Push: push.NewPush(user.Push),
-		}, time.NewTimer(time.Duration(anchor.Data.Time+5)*time.Second))
 	}
 }
 
 // HandleAnchorData deal with anchor lottery message
-func HandleAnchorData(conn *websocket.Conn, msg []byte, timer *time.Timer) error {
+func HandleAnchorData(client *AWPushClient, msg []byte) error {
 	var anchor dto.AnchorMsg
 	if err := json.Unmarshal(msg, &anchor); err != nil {
 		log.Default().Printf("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
-	timer.Reset(time.Second)
-	go joinLottery(conn, anchor)
+	client.sleep.Reset(time.Microsecond)
+	client.recv++
+	go joinLottery(client, anchor)
 	return nil
 }

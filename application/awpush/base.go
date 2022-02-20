@@ -5,6 +5,7 @@ import (
 	"log"
 	"subcenter/domain/push"
 	"subcenter/infra"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -48,6 +49,11 @@ type AWPushClient struct {
 	// Basic connection
 	conn *websocket.Conn // websocket connection
 
+	// Counter for reporting number of lottery
+	recv   int32        // received lottery number
+	join   int32        // joined lottery number
+	report *time.Ticker // report status
+
 	// Timer used for trigger action
 	timeout *time.Ticker // heartbeat period
 	reset   *time.Ticker // reconnect period
@@ -61,6 +67,7 @@ func NewAWPushClient() AWPushClient {
 	}
 	return AWPushClient{
 		conn:    conn,
+		report:  time.NewTicker(time.Hour),
 		timeout: time.NewTicker(time.Second * 30),
 		reset:   time.NewTicker(time.Hour * 4),
 		sleep:   time.NewTimer(time.Second * 1),
@@ -78,7 +85,7 @@ func (tc *AWPushClient) Serve() {
 			}
 			log.Default().Printf("[DEBUG] Heartbeat sent")
 		case <-tc.sleep.C:
-			if err = HandleMsg(tc.conn, tc.sleep); err != nil {
+			if err = HandleMsg(tc); err != nil {
 				log.Default().Printf("handle failed, error: %v", err)
 				push.NewPush("threecats").Submit(push.Data{
 					Title:   "# Handle awpush msg error",
@@ -91,6 +98,13 @@ func (tc *AWPushClient) Serve() {
 				continue
 			}
 			log.Default().Printf("[DEBUG] Reconnect success")
+		case <-tc.report.C:
+			push.NewPush("threecats").Submit(push.Data{
+				Title:   "# AwPush report",
+				Content: fmt.Sprintf("Recv: %d, join: %d", tc.recv, tc.join),
+			})
+			tc.recv = 0
+			atomic.StoreInt32(&tc.join, 0)
 		}
 	}
 }
