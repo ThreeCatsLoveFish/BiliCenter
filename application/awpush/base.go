@@ -49,6 +49,7 @@ type AWPushClient struct {
 
 	// Timer used for trigger action
 	timeout *time.Ticker // heartbeat period
+	reset   *time.Ticker // reconnect period
 	sleep   *time.Timer  // sleep time before execute next task
 }
 
@@ -60,23 +61,31 @@ func NewAWPushClient() AWPushClient {
 	return AWPushClient{
 		conn:    conn,
 		timeout: time.NewTicker(time.Second * 30),
+		reset:   time.NewTicker(time.Hour * 4),
 		sleep:   time.NewTimer(time.Second * 1),
 	}
 }
 
 func (tc *AWPushClient) Serve() {
+	var err error
 	for {
 		select {
 		case <-tc.timeout.C:
-			if err := infra.Ping(tc.conn); err != nil {
+			if err = infra.Ping(tc.conn); err != nil {
 				log.Default().Printf("send heartbeat error: %v", err)
 				continue
 			}
 			log.Default().Printf("[DEBUG] Heartbeat sent")
 		case <-tc.sleep.C:
-			if err := HandleMsg(tc.conn, tc.sleep); err != nil {
+			if err = HandleMsg(tc.conn, tc.sleep); err != nil {
 				log.Default().Printf("handle failed, error: %v", err)
 			}
+		case <-tc.reset.C:
+			if tc.conn, err = Establish(); err != nil {
+				log.Default().Printf("Reconnect failed, error: %v", err)
+				continue
+			}
+			log.Default().Printf("[DEBUG] Reconnect success")
 		}
 	}
 }

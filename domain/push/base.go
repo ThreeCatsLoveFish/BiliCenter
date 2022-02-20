@@ -11,14 +11,6 @@ func init() {
 	initPush()
 }
 
-// endpoint represents a kind of subscription
-type endpoint struct {
-	Name  string `config:"name"`
-	Type  string `config:"type"`
-	URL   string `config:"url"`
-	Token string `config:"token"`
-}
-
 // initPush bind endpoints with config file
 func initPush() {
 	conf := config.NewWithOptions("push", func(opt *config.Options) {
@@ -40,15 +32,19 @@ func initPush() {
 	for _, endpoint := range endpoints {
 		switch endpoint.Type {
 		case TurboName:
-			addPush(endpoint.Name, &TurboPush{
-				endpoint: endpoint,
-			})
+			addPush(endpoint.Name, &TurboPush{endpoint})
 		case PushDeerName:
-			addPush(endpoint.Name, &PushDeerPush{
-				endpoint: endpoint,
-			})
+			addPush(endpoint.Name, &PushDeerPush{endpoint})
 		}
 	}
+}
+
+// endpoint represents a kind of subscription
+type endpoint struct {
+	Name  string `config:"name"`
+	Type  string `config:"type"`
+	URL   string `config:"url"`
+	Token string `config:"token"`
 }
 
 // Data represents data needed for push
@@ -72,15 +68,6 @@ func addPush(name string, push Push) {
 func NewPush(name string) Push {
 	if pull, ok := pushMap[name]; ok {
 		return pull
-	} else {
-		return RawPush{}
 	}
-}
-
-type RawPush struct {
-	endpoint
-}
-
-func (RawPush) Submit(data Data) error {
-	return nil
+	panic("push not found")
 }
