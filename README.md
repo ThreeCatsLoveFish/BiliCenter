@@ -13,7 +13,7 @@ SubCenter —— 集成各种任务并进行实时推送的中间件。
 
 - [x] [Server酱-Turbo版](https://sct.ftqq.com/)
 - [x] [PushDeer (IOS)](https://github.com/easychen/pushdeer)
-- [ ] [PushPlus (微信)](https://www.pushplus.plus/)
+- [x] [PushPlus (微信)](https://www.pushplus.plus/)
 
 ### 数据服务
 
@@ -30,11 +30,5 @@ SubCenter —— 集成各种任务并进行实时推送的中间件。
 
 ```bash
 git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
-make
-./output/subcenter
+make run
 ```
-
-### 推送配置
-
-1. `config/push.toml` 文件中增加需要推送的endpoint和对应token(key)
-2. `config/task.toml` 文件中增加需要订阅的内容和发送频率
