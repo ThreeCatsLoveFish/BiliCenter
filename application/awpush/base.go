@@ -81,6 +81,7 @@ func (tc *AWPushClient) Serve() {
 		case <-tc.timeout.C:
 			if err = infra.Ping(tc.conn); err != nil {
 				log.Default().Printf("send heartbeat error: %v", err)
+				tc.reset.Reset(time.Millisecond)
 				continue
 			}
 			log.Default().Printf("[DEBUG] Heartbeat sent")
@@ -98,6 +99,7 @@ func (tc *AWPushClient) Serve() {
 				continue
 			}
 			log.Default().Printf("[DEBUG] Reconnect success")
+			tc.reset.Reset(time.Hour * 4)
 		case <-tc.report.C:
 			push.NewPush("threecats").Submit(push.Data{
 				Title:   "# AwPush report",

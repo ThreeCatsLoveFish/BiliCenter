@@ -47,7 +47,7 @@ func HandleMsg(client *AWPushClient) error {
 	_, msg, err := client.conn.ReadMessage()
 	if err != nil {
 		log.Default().Printf("ReadMessage error: %v", err)
-		return nil
+		return err
 	}
 	// Process pong signal
 	if string(msg) == "pong" {
