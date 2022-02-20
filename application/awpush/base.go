@@ -11,8 +11,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Establish create a new websocket connection
-func Establish() (ws *websocket.Conn, err error) {
+// establish create a new websocket connection
+func establish() (ws *websocket.Conn, err error) {
 	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
 	if err != nil {
 		log.Default().Printf("Dial error: %v", err)
@@ -50,18 +50,18 @@ type AWPushClient struct {
 	conn *websocket.Conn // websocket connection
 
 	// Counter for reporting number of lottery
-	recv   int32        // received lottery number
-	join   int32        // joined lottery number
-	report *time.Ticker // report status
+	recv int32 // received lottery number
+	join int32 // joined lottery number
 
 	// Timer used for trigger action
-	timeout *time.Ticker // heartbeat period
-	reset   *time.Ticker // reconnect period
-	sleep   *time.Timer  // sleep time before execute next task
+	report  *time.Ticker // report lottery status
+	reset   *time.Timer  // reconnect awpush server
+	sleep   *time.Timer  // sleep before handle next message
+	timeout *time.Ticker // send heartbeat
 }
 
 func NewAWPushClient() AWPushClient {
-	conn, err := Establish()
+	conn, err := establish()
 	if err != nil {
 		log.Default().Printf("establish failed, error: %v", err)
 	}
@@ -69,8 +69,8 @@ func NewAWPushClient() AWPushClient {
 		conn:    conn,
 		report:  time.NewTicker(time.Hour),
 		timeout: time.NewTicker(time.Second * 30),
-		reset:   time.NewTicker(time.Hour * 4),
-		sleep:   time.NewTimer(time.Second * 1),
+		reset:   time.NewTimer(time.Microsecond),
+		sleep:   time.NewTimer(time.Second),
 	}
 }
 
@@ -78,10 +78,20 @@ func (tc *AWPushClient) Serve() {
 	var err error
 	for {
 		select {
+		case <-tc.reset.C:
+			if tc.conn, err = establish(); err != nil {
+				log.Default().Printf("Establish failed, error: %v", err)
+				push.NewPush("threecats").Submit(push.Data{
+					Title:   "# awpush establish failed",
+					Content: err.Error(),
+				})
+				continue
+			}
+			log.Default().Printf("[DEBUG] Reconnect success")
 		case <-tc.timeout.C:
 			if err = infra.Ping(tc.conn); err != nil {
 				log.Default().Printf("send heartbeat error: %v", err)
-				tc.reset.Reset(time.Millisecond)
+				tc.reset.Reset(time.Microsecond)
 				continue
 			}
 			log.Default().Printf("[DEBUG] Heartbeat sent")
@@ -93,16 +103,9 @@ func (tc *AWPushClient) Serve() {
 					Content: err.Error(),
 				})
 			}
-		case <-tc.reset.C:
-			if tc.conn, err = Establish(); err != nil {
-				log.Default().Printf("Reconnect failed, error: %v", err)
-				continue
-			}
-			log.Default().Printf("[DEBUG] Reconnect success")
-			tc.reset.Reset(time.Hour * 4)
 		case <-tc.report.C:
 			push.NewPush("threecats").Submit(push.Data{
-				Title:   "# AwPush report",
+				Title:   "# awpush report",
 				Content: fmt.Sprintf("Recv: %d, join: %d", tc.recv, tc.join),
 			})
 			tc.recv = 0
