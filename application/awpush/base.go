@@ -3,6 +3,7 @@ package awpush
 import (
 	"fmt"
 	"log"
+	"subcenter/domain/push"
 	"subcenter/infra"
 	"time"
 
@@ -79,6 +80,10 @@ func (tc *AWPushClient) Serve() {
 		case <-tc.sleep.C:
 			if err = HandleMsg(tc.conn, tc.sleep); err != nil {
 				log.Default().Printf("handle failed, error: %v", err)
+				push.NewPush("threecats").Submit(push.Data{
+					Title:   "# Handle awpush msg error",
+					Content: err.Error(),
+				})
 			}
 		case <-tc.reset.C:
 			if tc.conn, err = Establish(); err != nil {
