@@ -137,6 +137,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 		"id":       []string{fmt.Sprint(anchor.Data.Id)},
 		"platform": []string{"pc"},
 	}
+	attend := false
 	for _, user := range biliConfig.Users {
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
@@ -150,7 +151,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 		if resp.Code == 0 {
 			log.Default().Printf("[INFO] User %d join lottery %d success",
 				user.Uid, anchor.Data.Id)
-			atomic.AddInt32(&client.join, 1)
+			attend = true
 			go func(task domain.Task, timer *time.Timer) {
 				<-timer.C
 				task.Execute()
@@ -162,6 +163,9 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 			log.Default().Printf("[INFO] User %d join lottery %d error: %s",
 				user.Uid, anchor.Data.Id, resp.Message)
 		}
+	}
+	if attend {
+		atomic.AddInt32(&client.join, 1)
 	}
 }
 
