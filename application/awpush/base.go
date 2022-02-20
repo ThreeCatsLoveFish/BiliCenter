@@ -11,6 +11,31 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type AWPushClient struct {
+	// Basic connection
+	conn *websocket.Conn // websocket connection
+
+	// Counter for reporting number of lottery
+	recv int32 // received lottery number
+	join int32 // joined lottery number
+
+	// Timer used for trigger action
+	report  *time.Ticker // report lottery status
+	reset   *time.Timer  // reconnect awpush server
+	sleep   *time.Timer  // sleep before handle next message
+	timeout *time.Ticker // send heartbeat
+}
+
+func NewAWPushClient() AWPushClient {
+	return AWPushClient{
+		conn:    nil,
+		report:  time.NewTicker(time.Hour),
+		timeout: time.NewTicker(time.Second * 30),
+		reset:   time.NewTimer(time.Microsecond),
+		sleep:   time.NewTimer(time.Second),
+	}
+}
+
 // establish create a new websocket connection
 func establish() (ws *websocket.Conn, err error) {
 	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
@@ -43,35 +68,6 @@ func establish() (ws *websocket.Conn, err error) {
 	}
 	log.Default().Println("[INFO] AwPush Verify success")
 	return conn, err
-}
-
-type AWPushClient struct {
-	// Basic connection
-	conn *websocket.Conn // websocket connection
-
-	// Counter for reporting number of lottery
-	recv int32 // received lottery number
-	join int32 // joined lottery number
-
-	// Timer used for trigger action
-	report  *time.Ticker // report lottery status
-	reset   *time.Timer  // reconnect awpush server
-	sleep   *time.Timer  // sleep before handle next message
-	timeout *time.Ticker // send heartbeat
-}
-
-func NewAWPushClient() AWPushClient {
-	conn, err := establish()
-	if err != nil {
-		log.Default().Printf("establish failed, error: %v", err)
-	}
-	return AWPushClient{
-		conn:    conn,
-		report:  time.NewTicker(time.Hour),
-		timeout: time.NewTicker(time.Second * 30),
-		reset:   time.NewTimer(time.Microsecond),
-		sleep:   time.NewTimer(time.Second),
-	}
 }
 
 func (tc *AWPushClient) Serve() {
