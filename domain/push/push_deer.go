@@ -5,14 +5,11 @@ import (
 	"subcenter/infra"
 )
 
-const (
-	PushDeerName = "push_deer"
-	PushDeerEnv  = "PUSHDEER"
-)
+const PushDeerName = "push_deer"
 
-// Server-Turbo push
+// PushDeer push
 type PushDeerPush struct {
-	endpoint
+	Endpoint
 }
 
 // Submit data to endpoint and finish one task

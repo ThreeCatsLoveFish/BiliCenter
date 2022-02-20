@@ -24,23 +24,24 @@ func initPush() {
 	}
 
 	// Load config file
-	var endpoints []endpoint
+	var endpoints []Endpoint
 	conf.BindStruct("endpoints", &endpoints)
 
 	// Load token or key here
-	conf.LoadOSEnv([]string{TurboEnv, PushDeerEnv}, false)
 	for _, endpoint := range endpoints {
 		switch endpoint.Type {
 		case TurboName:
-			addPush(endpoint.Name, &TurboPush{endpoint})
+			addPush(endpoint.Name, TurboPush{endpoint})
 		case PushDeerName:
-			addPush(endpoint.Name, &PushDeerPush{endpoint})
+			addPush(endpoint.Name, PushDeerPush{endpoint})
+		case PushPlusName:
+			addPush(endpoint.Name, PushPlusPush{endpoint})
 		}
 	}
 }
 
-// endpoint represents a kind of subscription
-type endpoint struct {
+// Endpoint represents a kind of subscription
+type Endpoint struct {
 	Name  string `config:"name"`
 	Type  string `config:"type"`
 	URL   string `config:"url"`

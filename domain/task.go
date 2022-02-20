@@ -22,7 +22,9 @@ func (task Task) Execute() {
 		return
 	}
 	for _, data := range dataList {
-		task.Submit(data)
+		if err = task.Submit(data); err != nil {
+			log.Default().Printf("Submit error: %v, data: %v", err, data)
+		}
 	}
 }
 

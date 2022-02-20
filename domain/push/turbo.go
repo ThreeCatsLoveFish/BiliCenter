@@ -6,14 +6,11 @@ import (
 	"subcenter/infra"
 )
 
-const (
-	TurboName = "turbo"
-	TurboEnv  = "TURBO"
-)
+const TurboName = "turbo"
 
 // Server-Turbo push
 type TurboPush struct {
-	endpoint
+	Endpoint
 }
 
 // Submit data to endpoint and finish one task
