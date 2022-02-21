@@ -21,7 +21,6 @@ func init() {
 		panic("load location error")
 	}
 	addPull(HeartBeat, HeartBeatPull{})
-	initStock()
 }
 
 type Pull interface {

@@ -1,27 +1,23 @@
 # Subscription Center
 
-SubCenter —— 集成各种任务并进行实时推送的中间件。
+SubCenter is a middleware that integrates task subscriptions and real-time push
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ThreeCatsLoveFish/SubCenter)
 [![wakatime](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter.svg)](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter)
 
-## 项目依赖
+## Dependency
 
-### 推送服务
-
-由于推送的设备要求与维护成本较高，请自行前往相关网站注册，如需接入可发Issue
+### Push Service
 
 - [Server酱-Turbo版](https://sct.ftqq.com/)
 - [PushDeer (IOS)](https://github.com/easychen/pushdeer)
-- [PushPlus (微信)](https://www.pushplus.plus/)
+- [PushPlus (WeChat)](https://www.pushplus.plus/)
 
-### 数据服务
+### Data Service
 
-- [x] 天选时刻：[BLTH](https://github.com/andywang425/BLTH)
+- Bilibili live award [awpush](https://github.com/andywang425/BLTH)
 
-## 使用说明
-
-### 环境搭建
+## Usage
 
 ```bash
 git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
