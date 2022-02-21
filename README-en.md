@@ -1,4 +1,6 @@
-# Subscription Center
+# SubCenter
+
+[中文](README.md) | English
 
 SubCenter is a middleware that integrates task subscriptions and real-time push
 

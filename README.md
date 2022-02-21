@@ -1,6 +1,8 @@
-# Subscription Center
+# SubCenter
 
-SubCenter —— 集成各种任务并进行实时推送的中间件。
+中文 | [English](README-en.md)
+
+推送中心 —— 集成各种任务并进行实时推送的中间件。
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ThreeCatsLoveFish/SubCenter)
 [![wakatime](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter.svg)](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter)
@@ -17,7 +19,7 @@ SubCenter —— 集成各种任务并进行实时推送的中间件。
 
 ### 数据服务
 
-- [x] 天选时刻：[BLTH](https://github.com/andywang425/BLTH)
+- 天选时刻：[BLTH](https://github.com/andywang425/BLTH)
 
 ## 使用说明
 
