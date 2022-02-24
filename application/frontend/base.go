@@ -6,9 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewFrontend() *gin.Engine {
-	router := gin.Default()
-
+func LoadFrontend(router *gin.Engine) {
 	// load html template
 	router.LoadHTMLGlob("template/*")
 
@@ -18,5 +16,4 @@ func NewFrontend() *gin.Engine {
 			"title": "Main website",
 		})
 	})
-	return router
 }

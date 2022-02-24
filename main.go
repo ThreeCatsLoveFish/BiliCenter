@@ -4,6 +4,8 @@ import (
 	"subcenter/application/awpush"
 	"subcenter/application/frontend"
 	"subcenter/domain"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -16,6 +18,7 @@ func main() {
 	go client.Run()
 
 	// Initialize frontend
-	router := frontend.NewFrontend()
+	router := gin.Default()
+	frontend.LoadFrontend(router)
 	router.Run(":8000")
 }
