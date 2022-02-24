@@ -24,3 +24,12 @@ func (push TurboPush) Submit(pd Data) error {
 	// Submit info
 	return infra.PostForm(rawUrl, data)
 }
+
+func (push TurboPush) Info() map[string]string{
+	return map[string]string{
+		"Name": push.Name,
+		"Type:": push.Type,
+		"Url": push.URL,
+		"Token": push.Token,
+	}
+}
