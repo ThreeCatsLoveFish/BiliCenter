@@ -1,6 +1,7 @@
 package main
 
 import (
+	"subcenter/application/api"
 	// "subcenter/application/awpush"
 	"subcenter/application/frontend"
 	// "subcenter/domain"
@@ -20,5 +21,6 @@ func main() {
 	// Initialize frontend
 	router := gin.Default()
 	frontend.LoadFrontend(router)
+	api.LoadApi(router)
 	router.Run(":8000")
 }
