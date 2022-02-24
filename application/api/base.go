@@ -1,34 +1,29 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"subcenter/domain/push"
+
+	"github.com/gin-gonic/gin"
 )
 
 // LoadApi add router for api service
 func LoadApi(router *gin.Engine) {
-	// DEMO for api data
-	router.GET("/api/demo/get/:data", func(c *gin.Context) {
-		c.JSON(http.StatusOK, map[string]string{
-			"data": c.Param("data"),
-		})
-	})
-	// edit to json for set, input json, add
+	// Add endpoint data
 	router.POST("/api/push/endpoint/add/", SetHandler)
-	//  edit to json for get, input string, obtain
+	// List endpoint data
 	router.GET("/api/push/endpoint/list/", GetHandler)
 }
 
 func SetHandler(c *gin.Context) {
-	var endpnt push.Endpoint
-	if err := c.ShouldBindJSON(&endpnt); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
+	var endpoint push.Endpoint
+	if err := c.ShouldBindJSON(&endpoint); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 	}
-	push.SetEndpoint(endpnt)
-	c.JSON(http.StatusOK, endpnt)
-
+	push.SetEndpoint(endpoint)
+	c.JSON(http.StatusOK, endpoint)
 }
 
 func GetHandler(c *gin.Context) {

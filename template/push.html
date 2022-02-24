@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>push</title>
+    <script type="text/javascript">
+        window.onload = function() {
+            getEndpoint()
+        }
+
+        function getEndpoint() {
+            var req = new XMLHttpRequest();
+            req.open("GET", "/api/push/endpoint/list/");
+            req.send(null);
+            var resp = JSON.parse(req.responseText);
+            var pos = document.getElementById("pushList");
+            pos.innerHTML = "<tr> <th> Name </th> <th> Type </th> <th> Url </th> <th> Token </th> </tr>";
+            for (name in resp) {
+                pos.innerHTML += "<tr>";
+                for (data in resp[name]) {
+                    pos.innerHTML += "<th> " + data + " < /th>";
+                }
+                pos.innerHTML += "</tr>";
+            }
+        }
+
+        function addEndpoint(params) {
+            var form = document.getElementById("formEndpoint");
+            var data = {
+                "name": form.children[0].value,
+                "type": form.children[1].value,
+                "url": form.children[2].value,
+                "token": form.children[3].value,
+            };
+            var req = new XMLHttpRequest();
+            req.open("POST", "/api/push/endpoint/add/")
+            req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            req.send(JSON.stringify(data));
+            getEndpoint();
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Push data</h1>
+    <table id="pushList" />
+    <h3>Add new push data</h3>
+    <form id="formEndpoint">
+        <p>name</p>
+        <input type="text" name="name">
+        <p>type</p>
+        <input type="text" name="type">
+        <p>url</p>
+        <input type="text" name="url">
+        <p>token</p>
+        <input type="password" name="token">
+        <input type="button" value="addEndpoint" onclick="addEndpoint()">
+    </form>
+</body>
+
+</html>
