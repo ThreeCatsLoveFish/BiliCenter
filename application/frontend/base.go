@@ -17,4 +17,7 @@ func LoadFrontend(router *gin.Engine) {
 			"content": "Test only",
 		})
 	})
+	router.GET("/push.html", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "push.html", nil)
+	})
 }
