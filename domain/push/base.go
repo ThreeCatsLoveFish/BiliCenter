@@ -29,14 +29,7 @@ func initPush() {
 
 	// Load token or key here
 	for _, endpoint := range endpoints {
-		switch endpoint.Type {
-		case TurboName:
-			addPush(endpoint.Name, TurboPush{endpoint})
-		case PushDeerName:
-			addPush(endpoint.Name, PushDeerPush{endpoint})
-		case PushPlusName:
-			addPush(endpoint.Name, PushPlusPush{endpoint})
-		}
+		SetEndpoint(endpoint)
 	}
 }
 
@@ -46,6 +39,25 @@ type Endpoint struct {
 	Type  string `config:"type"`
 	URL   string `config:"url"`
 	Token string `config:"token"`
+}
+
+func SetEndpoint(endpoint Endpoint) {
+	switch endpoint.Type {
+	case TurboName:
+		addPush(endpoint.Name, TurboPush{endpoint})
+	case PushDeerName:
+		addPush(endpoint.Name, PushDeerPush{endpoint})
+	case PushPlusName:
+		addPush(endpoint.Name, PushPlusPush{endpoint})
+	}
+}
+
+func GetEndpoint(name string) Push {
+	if push, ok := pushMap[name]; ok {
+		return push
+	}
+	// FIXME: nil depend
+	return nil
 }
 
 // Data represents data needed for push
@@ -67,8 +79,8 @@ func addPush(name string, push Push) {
 }
 
 func NewPush(name string) Push {
-	if pull, ok := pushMap[name]; ok {
-		return pull
+	if push, ok := pushMap[name]; ok {
+		return push
 	}
 	panic("push not found")
 }

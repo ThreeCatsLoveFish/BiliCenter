@@ -11,9 +11,10 @@ func LoadFrontend(router *gin.Engine) {
 	router.LoadHTMLGlob("template/*")
 
 	// add router for frontend service
-	router.GET("/index", func(c *gin.Context) {
+	router.GET("/index.html", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Main website",
+			"content": "Test only",
 		})
 	})
 }
