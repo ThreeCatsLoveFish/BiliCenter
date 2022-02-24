@@ -35,10 +35,10 @@ func initPush() {
 
 // Endpoint represents a kind of subscription
 type Endpoint struct {
-	Name  string `config:"name"`
-	Type  string `config:"type"`
-	URL   string `config:"url"`
-	Token string `config:"token"`
+	Name  string `config:"name"  json:"name"`
+	Type  string `config:"type"  json:"type"`
+	URL   string `config:"url"   json:"url"`
+	Token string `config:"token" json:"token"`
 }
 
 func SetEndpoint(endpoint Endpoint) {
@@ -68,6 +68,7 @@ type Data struct {
 
 // Push contain all info needed for push action
 type Push interface {
+	Info() map[string]string
 	Submit(data Data) error
 }
 
@@ -77,6 +78,7 @@ func addPush(name string, push Push) {
 	}
 	pushMap[name] = push
 }
+
 
 func NewPush(name string) Push {
 	if push, ok := pushMap[name]; ok {

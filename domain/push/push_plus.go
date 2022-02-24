@@ -25,3 +25,12 @@ func (push PushPlusPush) Submit(pd Data) error {
 	_, err := infra.GetWithParams(push.URL, data)
 	return err
 }
+
+func (push PushPlusPush) Info() map[string]string{
+	return map[string]string{
+		"Name": push.Name,
+		"Type:": push.Type,
+		"Url": push.URL,
+		"Token": push.Token,
+	}
+}
