@@ -52,12 +52,15 @@ func SetEndpoint(endpoint Endpoint) {
 	}
 }
 
-func GetEndpoint(name string) Push {
-	if push, ok := pushMap[name]; ok {
-		return push
+func GetEndpoint() []map[string]string {
+	// if push, ok := pushMap[name]; ok {
+	// 	return push
+	// }
+	endpoints := make([]map[string]string, 0)
+	for _, push := range pushMap {
+		endpoints = append(endpoints, push.Info())
 	}
-	// FIXME: nil depend
-	return nil
+	return endpoints
 }
 
 // Data represents data needed for push
@@ -78,7 +81,6 @@ func addPush(name string, push Push) {
 	}
 	pushMap[name] = push
 }
-
 
 func NewPush(name string) Push {
 	if push, ok := pushMap[name]; ok {
