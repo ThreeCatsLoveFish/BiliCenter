@@ -94,6 +94,7 @@ func (tc *AWPushClient) Run() {
 		case <-tc.sleep.C:
 			if err = HandleMsg(tc); err != nil {
 				log.Error("handle failed, error: %v", err)
+				tc.reset.Reset(time.Microsecond)
 				push.NewPush("threecats").Submit(push.Data{
 					Title:   "# Handle awpush msg error",
 					Content: err.Error(),
