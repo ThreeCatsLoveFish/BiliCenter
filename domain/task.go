@@ -1,9 +1,9 @@
 package domain
 
 import (
-	"log"
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
+	"subcenter/infra/log"
 	"time"
 
 	"github.com/gookit/config/v2"
@@ -18,12 +18,12 @@ type Task struct {
 func (task Task) Execute() {
 	dataList, err := task.Obtain()
 	if err != nil {
-		log.Default().Printf("Obtain error: %v", err)
+		log.Error("Obtain error: %v", err)
 		return
 	}
 	for _, data := range dataList {
 		if err = task.Submit(data); err != nil {
-			log.Default().Printf("Submit error: %v, data: %v", err, data)
+			log.Error("Submit error: %v, data: %v", err, data)
 		}
 	}
 }

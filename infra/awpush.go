@@ -3,8 +3,8 @@ package infra
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"subcenter/infra/dto"
+	"subcenter/infra/log"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,7 +18,7 @@ func Ping(conn *websocket.Conn) error {
 func Pong(conn *websocket.Conn) error {
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
-		log.Default().Printf("ReadMessage error: %v", err)
+		log.Error("ReadMessage error: %v", err)
 		return nil
 	}
 	if string(msg) == "pong" {
@@ -36,12 +36,12 @@ func Verify(conn *websocket.Conn, uid, apiKey string) error {
 	}
 	dataStr, err := json.Marshal(data)
 	if err != nil {
-		log.Default().Printf("Marshal error: %v", err)
+		log.Error("Marshal error: %v", err)
 		return err
 	}
 	err = conn.WriteMessage(websocket.BinaryMessage, PakoDeflate(dataStr))
 	if err != nil {
-		log.Default().Printf("Verify error: %v", err)
+		log.Error("Verify error: %v", err)
 		return err
 	}
 	return nil

@@ -3,13 +3,13 @@ package awpush
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 	"subcenter/domain"
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
 	"subcenter/infra"
 	"subcenter/infra/dto"
+	"subcenter/infra/log"
 	"sync/atomic"
 	"time"
 
@@ -46,12 +46,12 @@ func getHandler(name string) Handler {
 func HandleMsg(client *AWPushClient) error {
 	_, msg, err := client.conn.ReadMessage()
 	if err != nil {
-		log.Default().Printf("ReadMessage error: %v", err)
+		log.Error("ReadMessage error: %v", err)
 		return err
 	}
 	// Process pong signal
 	if string(msg) == "pong" {
-		log.Default().Printf("[DEBUG] Heartbeat received")
+		log.Debug("Heartbeat received")
 		client.sleep.Reset(time.Microsecond)
 		return nil
 	}
@@ -59,11 +59,11 @@ func HandleMsg(client *AWPushClient) error {
 	raw := infra.PakoInflate(msg)
 	var rawMsg dto.RawMsg
 	if err = json.Unmarshal(raw, &rawMsg); err != nil {
-		log.Default().Printf("Unmarshal error, raw data: %v, error: %v", raw, err)
+		log.Error("Unmarshal error, raw data: %v, error: %v", raw, err)
 		return err
 	}
 	if rawMsg.Code != 0 {
-		log.Default().Printf("Server code not zero, error exist!")
+		log.Error("Server code not zero, error exist!")
 	}
 	// Handle each kind of message
 	return getHandler(rawMsg.Type)(client, raw)
@@ -82,12 +82,12 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 	}
 	data, err := json.Marshal(resp)
 	if err != nil {
-		log.Default().Printf("Marshal error: %v", err)
+		log.Error("Marshal error: %v", err)
 		return err
 	}
 	err = conn.WriteMessage(websocket.BinaryMessage, infra.PakoDeflate(data))
 	if err != nil {
-		log.Default().Printf("Callback send error: %v", err)
+		log.Error("Callback send error: %v", err)
 		return err
 	}
 	return nil
@@ -97,7 +97,7 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 func HandleTasks(client *AWPushClient, msg []byte) error {
 	var task dto.TaskMsg
 	if err := json.Unmarshal(msg, &task); err != nil {
-		log.Default().Printf("Unmarshal TaskMsg error: %v, raw data: %s", err, string(msg))
+		log.Error("Unmarshal TaskMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
 	client.sleep.Reset(time.Duration(task.Data.SleepTime) * time.Millisecond)
@@ -141,15 +141,15 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 	for _, user := range biliConfig.Users {
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
-			log.Default().Printf("PostFormWithCookie error: %v, raw data: %v", err, data)
+			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
 			continue
 		}
 		var resp dto.BiliBaseResp
 		if err = json.Unmarshal(body, &resp); err != nil {
-			log.Default().Printf("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
+			log.Error("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
 		}
 		if resp.Code == 0 {
-			log.Default().Printf("[INFO] User %d join lottery %d success",
+			log.Info("User %d join lottery %d success",
 				user.Uid, anchor.Data.Id)
 			attend = true
 			go func(task domain.Task, timer *time.Timer) {
@@ -160,7 +160,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 				Push: push.NewPush(user.Push),
 			}, time.NewTimer(time.Duration(anchor.Data.Time+5)*time.Second))
 		} else {
-			log.Default().Printf("[INFO] User %d join lottery %d error: %s",
+			log.Info("User %d join lottery %d failed because %s",
 				user.Uid, anchor.Data.Id, resp.Message)
 		}
 	}
@@ -173,7 +173,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 func HandleAnchorData(client *AWPushClient, msg []byte) error {
 	var anchor dto.AnchorMsg
 	if err := json.Unmarshal(msg, &anchor); err != nil {
-		log.Default().Printf("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
+		log.Error("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
 	client.sleep.Reset(time.Microsecond)

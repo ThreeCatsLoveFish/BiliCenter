@@ -2,9 +2,9 @@ package awpush
 
 import (
 	"fmt"
-	"log"
 	"subcenter/domain/push"
 	"subcenter/infra"
+	"subcenter/infra/log"
 	"sync/atomic"
 	"time"
 
@@ -40,60 +40,60 @@ func NewAWPushClient() AWPushClient {
 func establish() (ws *websocket.Conn, err error) {
 	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
 	if err != nil {
-		log.Default().Printf("Dial error: %v", err)
+		log.Error("Dial error: %v", err)
 		return nil, err
 	}
 	_, msg, err := conn.ReadMessage()
 	if err != nil {
-		log.Default().Printf("ReadMessage error: %v", err)
+		log.Error("ReadMessage error: %v", err)
 		return nil, err
 	}
 	res := string(infra.PakoInflate(msg))
 	greet := `{"code":0,"type":"WS_OPEN","data":"连接成功"}`
 	if res != greet {
-		log.Default().Printf("Greeting error, obtain: %s", res)
+		log.Error("Greeting error, obtain: %s", res)
 		return nil, fmt.Errorf("greeting error, obtain: %s", res)
 	}
 	err = infra.Ping(conn)
 	if err != nil {
-		log.Default().Printf("Ping failed, error: %v", err)
+		log.Error("Ping failed, error: %v", err)
 	}
 	err = infra.Pong(conn)
 	if err != nil {
-		log.Default().Printf("Pong failed, error: %v", err)
+		log.Error("Pong failed, error: %v", err)
 	}
 	err = infra.Verify(conn, biliConfig.Uid, biliConfig.Token)
 	if err != nil {
-		log.Default().Printf("Verify failed, error: %v", err)
+		log.Error("Verify failed, error: %v", err)
 	}
-	log.Default().Println("[INFO] AwPush Verify success")
+	log.Info("AwPush Verify success")
 	return conn, err
 }
 
-func (tc *AWPushClient) Serve() {
+func (tc *AWPushClient) Run() {
 	var err error
 	for {
 		select {
 		case <-tc.reset.C:
 			if tc.conn, err = establish(); err != nil {
-				log.Default().Printf("Establish failed, error: %v", err)
+				log.Error("Establish failed, error: %v", err)
 				push.NewPush("threecats").Submit(push.Data{
 					Title:   "# awpush establish failed",
 					Content: err.Error(),
 				})
 				continue
 			}
-			log.Default().Printf("[DEBUG] Reconnect success")
+			log.Debug("Reconnect success")
 		case <-tc.timeout.C:
 			if err = infra.Ping(tc.conn); err != nil {
-				log.Default().Printf("send heartbeat error: %v", err)
+				log.Error("send heartbeat error: %v", err)
 				tc.reset.Reset(time.Microsecond)
 				continue
 			}
-			log.Default().Printf("[DEBUG] Heartbeat sent")
+			log.Debug("Heartbeat sent")
 		case <-tc.sleep.C:
 			if err = HandleMsg(tc); err != nil {
-				log.Default().Printf("handle failed, error: %v", err)
+				log.Error("handle failed, error: %v", err)
 				push.NewPush("threecats").Submit(push.Data{
 					Title:   "# Handle awpush msg error",
 					Content: err.Error(),

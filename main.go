@@ -1,30 +1,21 @@
 package main
 
 import (
-	"log"
-	"os"
 	"subcenter/application/awpush"
+	"subcenter/application/frontend"
 	"subcenter/domain"
 )
 
-// initLog initialize default logger
-func initLog() {
-	logFile, err := os.OpenFile("output/subcenter.log",
-		os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
-	if err != nil {
-		panic("create log file error")
-	}
-	log.Default().SetOutput(logFile)
-	log.Default().SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
-}
-
 func main() {
-	initLog()
 	// Initialize the task center
 	taskCenter := domain.NewTaskCenter()
-	taskCenter.Run()
+	go taskCenter.Run()
 
 	// Initialize awpush client
 	client := awpush.NewAWPushClient()
-	client.Serve()
+	go client.Run()
+
+	// Initialize frontend
+	router := frontend.NewFrontend()
+	router.Run(":8000")
 }

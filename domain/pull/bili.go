@@ -3,11 +3,11 @@ package pull
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 	"subcenter/domain/push"
 	"subcenter/infra"
 	"subcenter/infra/dto"
+	"subcenter/infra/log"
 )
 
 type BiliPull struct {
@@ -26,7 +26,7 @@ func (pull BiliPull) getAwardUser() ([]byte, error) {
 	}
 	data, err := infra.GetWithParams(rawUrl, params)
 	if err != nil {
-		log.Default().Printf("GetWithParams error: %v", err)
+		log.Error("GetWithParams error: %v", err)
 		return nil, err
 	}
 	return data, err
@@ -36,12 +36,12 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 	var data []push.Data
 	body, err := pull.getAwardUser()
 	if err != nil {
-		log.Default().Printf("getAwardUser error: %v", err)
+		log.Error("getAwardUser error: %v", err)
 		return nil, err
 	}
 	var resp dto.BiliAnchorResp
 	if err = json.Unmarshal(body, &resp); err != nil {
-		log.Default().Printf("Unmarshal BiliAnchorResp error: %v", err)
+		log.Error("Unmarshal BiliAnchorResp error: %v", err)
 		return nil, err
 	}
 	for _, user := range resp.Data.AwardUsers {
@@ -53,12 +53,12 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 					user.Uid, resp.Data.RoomId, resp.Data.AwardName,
 				),
 			})
-			log.Default().Printf("[LUCK] User %d get award %s",
+			log.Info("[LUCK] User %d get award %s",
 				user.Uid, resp.Data.AwardName)
 		}
 	}
 	if len(data) == 0 {
-		log.Default().Printf("[INFO] Lottery id %d no award", resp.Data.Id)
+		log.Info("Lottery id %d no award", resp.Data.Id)
 	}
 	return data, nil
 }
