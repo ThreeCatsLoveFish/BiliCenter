@@ -16,10 +16,10 @@
             var resp = JSON.parse(req.responseText);
             var pos = document.getElementById("pushList");
             pos.innerHTML = "<tr> <th> Name </th> <th> Type </th> <th> Url </th> <th> Token </th> </tr>";
-            for (name in resp) {
+            for (push in resp) {
                 pos.innerHTML += "<tr>";
-                for (data in resp[name]) {
-                    pos.innerHTML += "<th> " + data + " < /th>";
+                for (id in push) {
+                    pos.innerHTML += "<th> " + push[id] + " < /th>";
                 }
                 pos.innerHTML += "</tr>";
             }
