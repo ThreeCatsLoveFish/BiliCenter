@@ -26,11 +26,6 @@ func (push PushPlusPush) Submit(pd Data) error {
 	return err
 }
 
-func (push PushPlusPush) Info() map[string]string{
-	return map[string]string{
-		"Name": push.Name,
-		"Type:": push.Type,
-		"Url": push.URL,
-		"Token": push.Token,
-	}
+func (push PushPlusPush) Info() Endpoint {
+	return push.Endpoint
 }

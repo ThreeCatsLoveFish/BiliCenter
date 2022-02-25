@@ -52,11 +52,8 @@ func SetEndpoint(endpoint Endpoint) {
 	}
 }
 
-func GetEndpoint() []map[string]string {
-	// if push, ok := pushMap[name]; ok {
-	// 	return push
-	// }
-	endpoints := make([]map[string]string, 0)
+func GetEndpoint() []Endpoint {
+	endpoints := make([]Endpoint, 0)
 	for _, push := range pushMap {
 		endpoints = append(endpoints, push.Info())
 	}
@@ -71,7 +68,7 @@ type Data struct {
 
 // Push contain all info needed for push action
 type Push interface {
-	Info() map[string]string
+	Info() Endpoint
 	Submit(data Data) error
 }
 

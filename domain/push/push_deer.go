@@ -24,11 +24,6 @@ func (push PushDeerPush) Submit(pd Data) error {
 	return infra.PostForm(push.URL, data)
 }
 
-func (push PushDeerPush) Info() map[string]string{
-	return map[string]string{
-		"Name": push.Name,
-		"Type:": push.Type,
-		"Url": push.URL,
-		"Token": push.Token,
-	}
+func (push PushDeerPush) Info() Endpoint {
+	return push.Endpoint
 }
