@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AddEndpoint update endpoint data
-func AddEndpoint(c *gin.Context) {
+// UpdateEndpoint update endpoint data
+func UpdateEndpoint(c *gin.Context) {
 	var endpoint push.Endpoint
 	if err := c.ShouldBindJSON(&endpoint); err != nil {
 		c.JSON(http.StatusOK, gin.H{

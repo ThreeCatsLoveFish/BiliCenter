@@ -7,5 +7,5 @@ import (
 // LoadApi add router for api service
 func LoadApi(router *gin.Engine) {
 	router.GET("/api/push/endpoint/list/", ListEndpoint)
-	router.POST("/api/push/endpoint/add/", AddEndpoint)
+	router.POST("/api/push/endpoint/update/", UpdateEndpoint)
 }

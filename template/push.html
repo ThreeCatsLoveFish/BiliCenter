@@ -11,11 +11,7 @@
         }
     </style>
     <script type="text/javascript">
-        window.onload = function () {
-            getEndpoint()
-        }
-
-        function getEndpoint() {
+        function listEndpoint() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "/api/push/endpoint/list/");
             xhr.onreadystatechange = function () {
@@ -35,7 +31,7 @@
             xhr.send(null);
         }
 
-        function addEndpoint() {
+        function updateEndpoint() {
             var form = new FormData(document.getElementById("formEndpoint"));
             var data = {
                 "name": form.get("name"),
@@ -44,10 +40,10 @@
                 "token": form.get("token"),
             };
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/api/push/endpoint/add/");
+            xhr.open("POST", "/api/push/endpoint/update/");
             xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
             xhr.send(JSON.stringify(data));
-            getEndpoint();
+            listEndpoint();
         }
     </script>
 </head>
@@ -55,13 +51,13 @@
 <body>
     <h1>Push data</h1>
     <table id="pushList" border="1"></table>
-    <h3>Add new push data</h3>
+    <h3>Update push data</h3>
     <form id="formEndpoint">
         <label class="theLabels">Name:</label> <input type="text" name="name"><br>
         <label class="theLabels">Type:</label> <input type="text" name="type"><br>
         <label class="theLabels">Url:</label> <input type="text" name="url"> <br>
         <label class="theLabels">Token:</label> <input type="password" name="token"> <br>
-        <input type="submit" value="addEndpoint" onclick="addEndpoint()">
+        <input type="submit" value="updateEndpoint" onclick="updateEndpoint()">
     </form>
 </body>
 
