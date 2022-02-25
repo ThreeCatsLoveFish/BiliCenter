@@ -12,10 +12,7 @@ func LoadFrontend(router *gin.Engine) {
 
 	// add router for frontend service
 	router.GET("/index.html", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Main website",
-			"content": "Test only",
-		})
+		c.HTML(http.StatusOK, "index.html", nil)
 	})
 	router.GET("/push.html", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "push.html", nil)
