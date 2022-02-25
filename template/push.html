@@ -4,25 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <title>push</title>
+    <style>
+        .theLabels {
+            width: 10%;
+            float: left;
+        }
+    </style>
     <script type="text/javascript">
-        window.onload = function() {
+        window.onload = function () {
             getEndpoint()
         }
 
         function getEndpoint() {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "/api/push/endpoint/list/");
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     var resp = JSON.parse(xhr.responseText);
                     var pos = document.getElementById("pushList");
-                    pos.innerHTML = "<tr> <th> Name </th> <th> Type </th> <th> Url </th> <th> Token </th> </tr>";
-                    for (push in resp) {
-                        pos.innerHTML += "<tr>";
-                        for (id in push) {
-                            pos.innerHTML += "<th> " + push[id] + " < /th>";
-                        }
-                        pos.innerHTML += "</tr>";
+                    pos.innerHTML += "<tr> <th> Name </th> <th> Type </th> <th> Url </th> <th> Token </th> </tr>";
+                    for (var i = 0; i < resp.length; i++) {
+                        push = resp[i];
+                        var str = "<tr>"
+                        for (id in push) str += "<td> " + push[id] + " </td>";
+                        str += "</tr>"
+                        pos.innerHTML += str;
                     }
                 }
             }
@@ -48,10 +54,13 @@
 
 <body>
     <h1>Push data</h1>
-    <table id="pushList" />
+    <table id="pushList" border="1"></table>
     <h3>Add new push data</h3>
     <form id="formEndpoint">
-        Name: <input type="text" name="name"><br> Type: <input type="text" name="type"><br> Url: <input type="text" name="url"> <br> Token: <input type="password" name="token">
+        <label class="theLabels">Name:</label> <input type="text" name="name"><br>
+        <label class="theLabels">Type:</label> <input type="text" name="type"><br>
+        <label class="theLabels">Url:</label> <input type="text" name="url"> <br>
+        <label class="theLabels">Token:</label> <input type="password" name="token"> <br>
         <input type="submit" value="addEndpoint" onclick="addEndpoint()">
     </form>
 </body>
