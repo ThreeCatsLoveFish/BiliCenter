@@ -29,7 +29,7 @@ type AWPushClient struct {
 func NewAWPushClient() AWPushClient {
 	return AWPushClient{
 		conn:    nil,
-		report:  time.NewTicker(time.Hour),
+		report:  time.NewTicker(time.Hour * 4),
 		timeout: time.NewTicker(time.Second * 30),
 		reset:   time.NewTimer(time.Microsecond),
 		sleep:   time.NewTimer(time.Second),
