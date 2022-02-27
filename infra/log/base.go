@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -24,13 +25,13 @@ func Writer() io.Writer {
 }
 
 func Debug(format string, v ...interface{}) {
-	logger.Printf("[DEBUG] "+format, v...)
+	logger.Output(2, fmt.Sprintf("[DEBUG] "+format, v...))
 }
 
 func Info(format string, v ...interface{}) {
-	logger.Printf("[INFO] "+format, v...)
+	logger.Output(2, fmt.Sprintf("[INFO] "+format, v...))
 }
 
 func Error(format string, v ...interface{}) {
-	logger.Printf("[ERROR] "+format, v...)
+	logger.Output(2, fmt.Sprintf("[ERROR] "+format, v...))
 }
