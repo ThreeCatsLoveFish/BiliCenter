@@ -13,6 +13,7 @@ var biliConfig BiliConfig
 
 type User struct {
 	Uid    int32
+	Csrf   string
 	Cookie string `config:"cookie"`
 	Push   string `config:"push"`
 }
@@ -63,10 +64,15 @@ func initAWPush() {
 		if err != nil {
 			panic("cookie error")
 		}
+		csrf, err := req.Cookie("bili_jct")
+		if err != nil {
+			panic("cookie error")
+		}
 		num, err := strconv.ParseInt(uid.Value, 10, 32)
 		if err != nil {
 			panic("uid parse err")
 		}
 		biliConfig.Users[idx].Uid = int32(num)
+		biliConfig.Users[idx].Csrf = csrf.Value
 	}
 }

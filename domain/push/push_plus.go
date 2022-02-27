@@ -22,7 +22,7 @@ func (push PushPlusPush) Submit(pd Data) error {
 		"template": []string{"markdown"},
 	}
 	// Submit info
-	_, err := infra.GetWithParams(push.URL, data)
+	_, err := infra.Get(push.URL, "", data)
 	return err
 }
 

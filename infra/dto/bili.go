@@ -1,5 +1,12 @@
 package dto
 
+// BiliBaseResp is basic response body of all bilibili API
+type BiliBaseResp struct {
+	Code    int32  `json:"code"`
+	Message string `json:"message"`
+	Msg     string `json:"msg,omitempty"`
+}
+
 // User info of bilibili
 type User struct {
 	Uid   int32  `json:"uid"`
@@ -16,7 +23,7 @@ type Anchor struct {
 	AwardName    string `json:"award_name"`
 	AwardNum     int32  `json:"award_num"`
 	AwardImage   string `json:"award_image"`
-	Barrage      string `json:"danmu"`
+	Danmu        string `json:"danmu"`
 	Time         int32  `json:"time"`
 	CurrentTime  int32  `json:"current_time"`
 	JoinType     int32  `json:"join_type"`
@@ -36,15 +43,32 @@ type Anchor struct {
 	GoodsId      int32  `json:"goods_id"`
 }
 
-// BiliBaseResp is basic response body of all bilibili API
-type BiliBaseResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
-	Msg     string `json:"msg"`
-}
-
-// BiliAnchorResp is response body of anchor info
-type BiliAnchorResp struct {
+// BiliAnchor is response body of anchor info
+type BiliAnchor struct {
 	BiliBaseResp
 	Data Anchor `json:"data"`
+}
+
+type BiliNewTag struct {
+	BiliBaseResp
+	Data struct {
+		TagId int32 `json:"tagid"`
+	} `json:"data"`
+}
+
+type BiliListTag struct {
+	BiliBaseResp
+	Data []struct {
+		Name  string `json:"name"`
+		TagId int32  `json:"tagid"`
+		Count int32  `json:"count"`
+		Tip   string `json:"tip"`
+	} `json:"data"`
+}
+
+type BiliRelation struct {
+	BiliBaseResp
+	Data []struct {
+		Mid int32 `json:"mid"`
+	} `json:"data"`
 }

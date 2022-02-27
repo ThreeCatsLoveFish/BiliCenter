@@ -24,9 +24,9 @@ func (pull BiliPull) getAwardUser() ([]byte, error) {
 	params := url.Values{
 		"roomid": []string{fmt.Sprint(pull.roomid)},
 	}
-	data, err := infra.GetWithParams(rawUrl, params)
+	data, err := infra.Get(rawUrl, "", params)
 	if err != nil {
-		log.Error("GetWithParams error: %v", err)
+		log.Error("Get error: %v", err)
 		return nil, err
 	}
 	return data, err
@@ -39,7 +39,7 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 		log.Error("getAwardUser error: %v", err)
 		return nil, err
 	}
-	var resp dto.BiliAnchorResp
+	var resp dto.BiliAnchor
 	if err = json.Unmarshal(body, &resp); err != nil {
 		log.Error("Unmarshal BiliAnchorResp error: %v", err)
 		return nil, err

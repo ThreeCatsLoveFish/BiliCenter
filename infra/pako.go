@@ -3,6 +3,7 @@ package infra
 import (
 	"bytes"
 	"compress/zlib"
+	"io"
 )
 
 func PakoDeflate(data []byte) []byte {
@@ -14,9 +15,8 @@ func PakoDeflate(data []byte) []byte {
 }
 
 func PakoInflate(data []byte) []byte {
-	buf := make([]byte, 1024)
 	res, _ := zlib.NewReader(bytes.NewBuffer(data))
 	defer res.Close()
-	size, _ := res.Read(buf)
-	return buf[:size]
+	out, _ := io.ReadAll(res)
+	return out
 }
