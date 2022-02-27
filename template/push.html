@@ -18,7 +18,7 @@
                 if (xhr.readyState == 4) {
                     var resp = JSON.parse(xhr.responseText);
                     var pos = document.getElementById("pushList");
-                    pos.innerHTML += "<tr> <th> Name </th> <th> Type </th> <th> Url </th> <th> Token </th> </tr>";
+                    pos.innerHTML = "<tr> <th> Name </th> <th> Type </th> <th> Url </th> <th> Token </th> </tr>";
                     for (var i = 0; i < resp.length; i++) {
                         push = resp[i];
                         var str = "<tr>"
