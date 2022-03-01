@@ -12,8 +12,8 @@ func UpdateEndpoint(c *gin.Context) {
 	var endpoint push.Endpoint
 	if err := c.ShouldBindJSON(&endpoint); err != nil {
 		c.JSON(http.StatusOK, gin.H{
-			"code":  5,
-			"error": err,
+			"code": 4,
+			"msg":  err,
 		})
 	}
 	push.SetEndpoint(endpoint)

@@ -117,34 +117,42 @@ func getRelation(user User) (string, error) {
 
 // UpdateRelation traverse all account and update relation
 func UpdateRelation() gin.H {
-	failUser := make([]gin.H, 0)
+	type result struct {
+		Uid   int32 `json:"uid"`
+		Error error `json:"err"`
+	}
+	fail := make([]result, 0)
 	for _, user := range biliConfig.Users {
 		fids, err := getRelation(user)
 		if err != nil {
-			failUser = append(failUser, gin.H{
-				"uid":   user.Uid,
-				"error": err,
-			})
+			data := result{
+				Uid:   user.Uid,
+				Error: err,
+			}
+			log.Error("getRelation failed, detail: %v", data)
+			fail = append(fail, data)
+			continue
 		}
 		if len(fids) == 0 {
+			log.Info("No relation need update for user %d", user.Uid)
 			continue
 		}
 		if err = moveUser(user, fids); err != nil {
-			failUser = append(failUser, gin.H{
-				"uid":   user.Uid,
-				"error": err,
-			})
+			data := result{
+				Uid:   user.Uid,
+				Error: err,
+			}
+			log.Error("moveUser failed, detail: %v", data)
+			fail = append(fail, data)
+			continue
 		}
 		log.Info("Update relation success for user %d", user.Uid)
 	}
-	if len(failUser) == 0 {
-		return gin.H{
-			"code": 0,
-		}
-	} else {
-		return gin.H{
-			"code": 5,
-			"data": failUser,
-		}
+	if len(fail) == 0 {
+		return gin.H{"code": 0}
+	}
+	return gin.H{
+		"code": 5,
+		"data": fail,
 	}
 }
