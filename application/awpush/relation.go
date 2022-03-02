@@ -7,8 +7,6 @@ import (
 	"subcenter/infra"
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
-
-	"github.com/gin-gonic/gin"
 )
 
 const tagName = "BLTH天选关注UP"
@@ -116,7 +114,7 @@ func getRelation(user User) (string, error) {
 }
 
 // UpdateRelation traverse all account and update relation
-func UpdateRelation() gin.H {
+func UpdateRelation() interface{} {
 	type result struct {
 		Uid   int32 `json:"uid"`
 		Error error `json:"err"`
@@ -149,10 +147,7 @@ func UpdateRelation() gin.H {
 		log.Info("Update relation success for user %d", user.Uid)
 	}
 	if len(fail) == 0 {
-		return gin.H{"code": 0}
+		return nil
 	}
-	return gin.H{
-		"code": 5,
-		"data": fail,
-	}
+	return fail
 }

@@ -11,16 +11,22 @@ import (
 func UpdateEndpoint(c *gin.Context) {
 	var endpoint push.Endpoint
 	if err := c.ShouldBindJSON(&endpoint); err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"code": 4,
-			"msg":  err,
+		c.JSON(http.StatusOK, Resp{
+			Code: Success,
+			Msg:  err.Error(),
 		})
+		return
 	}
 	push.SetEndpoint(endpoint)
-	c.JSON(http.StatusOK, endpoint)
+	c.JSON(http.StatusOK, Resp{
+		Code: Success,
+	})
 }
 
 // ListEndpoint list all endpoint data
 func ListEndpoint(c *gin.Context) {
-	c.JSON(http.StatusOK, push.GetEndpoint())
+	c.JSON(http.StatusOK, Resp{
+		Code: Success,
+		Data: push.GetEndpoint(),
+	})
 }

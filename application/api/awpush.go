@@ -9,5 +9,14 @@ import (
 
 // UpdateBili update bili account
 func UpdateBili(c *gin.Context) {
-	c.JSON(http.StatusOK, awpush.UpdateRelation())
+	if result := awpush.UpdateRelation(); result == nil {
+		c.JSON(http.StatusOK, Resp{
+			Code: Success,
+		})
+	} else {
+		c.JSON(http.StatusOK, Resp{
+			Code: ErrInternal,
+			Data: result,
+		})
+	}
 }
