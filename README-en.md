@@ -17,7 +17,7 @@ SubCenter is a middleware that integrates task subscriptions and real-time push
 
 ### Data Service
 
-- Bilibili live award [awpush](https://github.com/andywang425/BLTH)
+- Bilibili live award [awpush](https://github.com/andywang425/BLTH-server)
 
 ## Usage
 

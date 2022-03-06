@@ -19,7 +19,7 @@
 
 ### 数据服务
 
-- 天选时刻：[BLTH](https://github.com/andywang425/BLTH)
+- 天选时刻：[awpush](https://github.com/andywang425/BLTH-server)
 
 ## 使用说明
 
