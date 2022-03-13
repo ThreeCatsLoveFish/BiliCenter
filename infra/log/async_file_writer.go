@@ -34,7 +34,7 @@ func (ht *DayTicker) Ticker() <-chan time.Time {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 		for t := range ticker.C {
-			if t.Day() != day {
+			if t.Minute() != day {
 				ch <- t
 				day = t.Minute()
 			}
