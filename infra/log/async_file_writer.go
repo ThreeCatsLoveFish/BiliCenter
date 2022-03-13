@@ -117,5 +117,5 @@ func (w *AsyncFileWriter) rotateFile() {
 }
 
 func (w *AsyncFileWriter) timeFilePath() string {
-	return w.filePath + "." + time.Now().Format("2006-01-02_15:04")
+	return w.filePath + "." + time.Now().Format("2006-01-02")
 }
