@@ -29,14 +29,13 @@ func (ht *DayTicker) Stop() {
 func (ht *DayTicker) Ticker() <-chan time.Time {
 	ch := make(chan time.Time)
 	go func() {
-		// FIXME: test only for minute, should be day
-		day := time.Now().Minute()
+		day := time.Now().Day()
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 		for t := range ticker.C {
-			if t.Minute() != day {
+			if t.Day() != day {
 				ch <- t
-				day = t.Minute()
+				day = t.Day()
 			}
 		}
 	}()
