@@ -1,8 +1,10 @@
 package log
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -51,8 +53,13 @@ type AsyncFileWriter struct {
 }
 
 func NewAsyncFileWriter(filePath string) *AsyncFileWriter {
+	absFilePath, err := filepath.Abs(filePath)
+	if err != nil {
+		panic(fmt.Sprintf("get file path of logger error. filePath=%s, err=%s", filePath, err))
+	}
+	
 	return &AsyncFileWriter{
-		filePath:  filePath,
+		filePath:  absFilePath,
 		dayTicker: NewDayTicker(),
 	}
 }
