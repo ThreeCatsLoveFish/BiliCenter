@@ -57,7 +57,7 @@ func NewAsyncFileWriter(filePath string) *AsyncFileWriter {
 	if err != nil {
 		panic(fmt.Sprintf("get file path of logger error. filePath=%s, err=%s", filePath, err))
 	}
-	
+
 	return &AsyncFileWriter{
 		filePath:  absFilePath,
 		dayTicker: NewDayTicker(),
@@ -103,7 +103,8 @@ func (w *AsyncFileWriter) initLogFile() error {
 }
 
 func (w *AsyncFileWriter) rotateFile() {
-	for range w.dayTicker.C {
+	select {
+	case <-w.dayTicker.C:
 		w.mu.Lock()
 		if err := w.fd.Close(); err != nil {
 			panic(err)
@@ -112,6 +113,7 @@ func (w *AsyncFileWriter) rotateFile() {
 			panic(err)
 		}
 		w.mu.Unlock()
+	default:
 	}
 }
 
