@@ -20,16 +20,16 @@ type AWPushClient struct {
 	join int32 // joined lottery number
 
 	// Timer used for trigger action
-	report  *time.Ticker // report lottery status
-	reset   *time.Timer  // reconnect awpush server
-	sleep   *time.Timer  // sleep before handle next message
-	timeout *time.Ticker // send heartbeat
+	report  *log.DayTicker // report lottery status
+	reset   *time.Timer    // reconnect awpush server
+	sleep   *time.Timer    // sleep before handle next message
+	timeout *time.Ticker   // send heartbeat
 }
 
 func NewAWPushClient() AWPushClient {
 	return AWPushClient{
 		conn:    nil,
-		report:  time.NewTicker(time.Hour * 4),
+		report:  log.NewDayTicker(),
 		timeout: time.NewTicker(time.Second * 30),
 		reset:   time.NewTimer(time.Microsecond),
 		sleep:   time.NewTimer(time.Second),
