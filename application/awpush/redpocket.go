@@ -17,7 +17,7 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	var roomId string
 	switch val := redPocket.Data.RoomID.(type) {
 	case int:
-		roomId = fmt.Sprintf("%d", val)
+		roomId = fmt.Sprint(val)
 	case string:
 		roomId = val
 	}
@@ -30,6 +30,7 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 		"jump_from":  []string{""},
 	}
 	for _, user := range biliConfig.Users {
+		log.Debug("Red pocket req %v", data)
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
@@ -51,7 +52,6 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 
 // HandleRedPocket deal with red pocket message
 func HandleRedPocket(client *AWPushClient, msg []byte) error {
-	log.Debug("Red pocket data is %v", string(msg))
 	var redPocket dto.RedPocketMsg
 	if err := json.Unmarshal(msg, &redPocket); err != nil {
 		log.Error("Unmarshal RedPocketMsg error: %v, raw data: %s", err, string(msg))
