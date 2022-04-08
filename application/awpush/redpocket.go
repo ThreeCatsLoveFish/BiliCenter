@@ -13,9 +13,15 @@ import (
 // joinRedPocket refers to bilibili live lottery
 func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/popularityRedPocket/RedPocketDraw"
+	// FIXME: modify this part to unify type
+	var roomId string
+	switch val := redPocket.Data.RoomID.(type) {
+	case int32, string:
+		roomId = fmt.Sprint(val)
+	}
 	data := url.Values{
 		"ruid":       []string{fmt.Sprint(redPocket.Data.UID)},
-		"room_id":    []string{redPocket.Data.RoomID},
+		"room_id":    []string{roomId},
 		"lot_id":     []string{fmt.Sprint(redPocket.Data.LotteryID)},
 		"spm_id":     []string{"444.8.red_envelope.extract"},
 		"session_id": []string{""},

@@ -67,7 +67,8 @@ type RedPocket struct {
 	TotalPrice  int32  `json:"total_price"`
 	WaitNum     int32  `json:"wait_num"`
 	UID         int32  `json:"uid"`
-	RoomID      string `json:"roomid"`
+	// FIXME: change to int or string for fix
+	RoomID      interface{} `json:"roomid"`
 }
 
 // BiliAnchor is response body of anchor info
