@@ -63,11 +63,11 @@ type RedPocket struct {
 		GiftName string `json:"gift_name"`
 		Num      int32  `json:"num"`
 	} `json:"awards"`
-	LotConfigID int32 `json:"lot_config_id"`
-	TotalPrice  int32 `json:"total_price"`
-	WaitNum     int32 `json:"wait_num"`
-	UID         int32 `json:"uid"`
-	RoomiD      int32 `json:"roomid"`
+	LotConfigID int32  `json:"lot_config_id"`
+	TotalPrice  int32  `json:"total_price"`
+	WaitNum     int32  `json:"wait_num"`
+	UID         int32  `json:"uid"`
+	RoomID      string `json:"roomid"`
 }
 
 // BiliAnchor is response body of anchor info
