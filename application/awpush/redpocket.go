@@ -43,7 +43,7 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 
 // HandleRedPocket deal with red pocket message
 func HandleRedPocket(client *AWPushClient, msg []byte) error {
-	log.Debug("Red pocket data is %v", msg)
+	log.Debug("Red pocket data is %v", string(msg))
 	var redPocket dto.RedPocketMsg
 	if err := json.Unmarshal(msg, &redPocket); err != nil {
 		log.Error("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
