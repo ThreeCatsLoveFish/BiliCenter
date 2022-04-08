@@ -31,7 +31,6 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 		"jump_from":  []string{""},
 	}
 	for _, user := range biliConfig.Users {
-		log.Debug("Red pocket req %v", data)
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
