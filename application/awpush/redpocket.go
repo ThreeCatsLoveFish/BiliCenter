@@ -16,7 +16,7 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	// FIXME: modify this part to unify type
 	var roomId string
 	switch val := redPocket.Data.RoomID.(type) {
-	case int32:
+	case int:
 		roomId = fmt.Sprintf("%d", val)
 	case string:
 		roomId = val
