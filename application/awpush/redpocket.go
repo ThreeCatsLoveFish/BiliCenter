@@ -16,10 +16,10 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	// FIXME: modify this part to unify type
 	var roomId string
 	switch val := redPocket.Data.RoomID.(type) {
-	case int:
-		roomId = fmt.Sprint(val)
 	case string:
 		roomId = val
+	default:
+		roomId = fmt.Sprint(val)
 	}
 	data := url.Values{
 		"ruid":       []string{fmt.Sprint(redPocket.Data.UID)},
