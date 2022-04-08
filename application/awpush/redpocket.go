@@ -19,7 +19,8 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	case string:
 		roomId = val
 	default:
-		roomId = fmt.Sprintf("%d", val.(int))
+		data := val.(float64)
+		roomId = fmt.Sprintf("%d", int64(data))
 	}
 	data := url.Values{
 		"ruid":       []string{fmt.Sprint(redPocket.Data.UID)},
