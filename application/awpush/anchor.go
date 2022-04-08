@@ -28,7 +28,7 @@ func filterCheckLottery(anchor dto.AnchorMsg) bool {
 	}
 	// Live room is not safe
 	for _, id := range biliConfig.Filter.Rooms {
-		if anchor.Data.RoomId == id {
+		if anchor.Data.RoomID == id {
 			return true
 		}
 	}
@@ -43,7 +43,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 	}
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Join"
 	data := url.Values{
-		"id":       []string{fmt.Sprint(anchor.Data.Id)},
+		"id":       []string{fmt.Sprint(anchor.Data.ID)},
 		"platform": []string{"pc"},
 	}
 	attend := false
@@ -59,18 +59,18 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 		}
 		if resp.Code == 0 {
 			log.Info("User %d join lottery %d success",
-				user.Uid, anchor.Data.Id)
+				user.Uid, anchor.Data.ID)
 			attend = true
 			go func(task domain.Task, timer *time.Timer) {
 				<-timer.C
 				task.Execute()
 			}(domain.Task{
-				Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
+				Pull: pull.NewBiliPull(anchor.Data.RoomID, user.Uid),
 				Push: push.NewPush(user.Push),
 			}, time.NewTimer(time.Duration(anchor.Data.Time+5)*time.Second))
 		} else {
 			log.Info("User %d join lottery %d failed because %s",
-				user.Uid, anchor.Data.Id, resp.Message)
+				user.Uid, anchor.Data.ID, resp.Message)
 		}
 	}
 	if attend {

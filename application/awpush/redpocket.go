@@ -14,12 +14,12 @@ import (
 func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/popularityRedPocket/RedPocketDraw"
 	data := url.Values{
-		"ruid": []string{fmt.Sprint(redPocket.Data.RoomUid)}, 
-        "room_id": []string{fmt.Sprint(redPocket.Data.RoomId)},
-        "lot_id": []string{fmt.Sprint(redPocket.Data.LotteryId)},
-        "spm_id": []string{"444.8.red_envelope.extract"},
-        "session_id": []string{""},
-        "jump_from": []string{""},
+		"ruid":       []string{fmt.Sprint(redPocket.Data.UID)},
+		"room_id":    []string{fmt.Sprint(redPocket.Data.RoomiD)},
+		"lot_id":     []string{fmt.Sprint(redPocket.Data.LotteryID)},
+		"spm_id":     []string{"444.8.red_envelope.extract"},
+		"session_id": []string{""},
+		"jump_from":  []string{""},
 	}
 	for _, user := range biliConfig.Users {
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
@@ -32,11 +32,11 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 			log.Error("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
 		}
 		if resp.Code == 0 {
-			log.Info("User %d join lottery %d success",
-				user.Uid, redPocket.Data.LotteryId)
+			log.Info("User %d join redpocket %d success",
+				user.Uid, redPocket.Data.LotteryID)
 		} else {
-			log.Info("User %d join lottery %d failed because %s",
-				user.Uid, redPocket.Data.LotteryId, resp.Message)
+			log.Info("User %d join redpocket %d failed because %s",
+				user.Uid, redPocket.Data.LotteryID, resp.Message)
 		}
 	}
 }
@@ -46,7 +46,7 @@ func HandleRedPocket(client *AWPushClient, msg []byte) error {
 	log.Debug("Red pocket data is %v", string(msg))
 	var redPocket dto.RedPocketMsg
 	if err := json.Unmarshal(msg, &redPocket); err != nil {
-		log.Error("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
+		log.Error("Unmarshal RedPocketMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
 	client.sleep.Reset(time.Microsecond)

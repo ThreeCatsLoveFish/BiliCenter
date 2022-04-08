@@ -45,20 +45,20 @@ func (pull BiliPull) Obtain() ([]push.Data, error) {
 		return nil, err
 	}
 	for _, user := range resp.Data.AwardUsers {
-		if user.Uid == pull.uid {
+		if user.UID == pull.uid {
 			data = append(data, push.Data{
 				Title: "# 天选中奖",
 				Content: fmt.Sprintf(
 					"用户: %d\n\n房间号: %d\n\n中奖物品: %s",
-					user.Uid, resp.Data.RoomId, resp.Data.AwardName,
+					user.UID, resp.Data.RoomID, resp.Data.AwardName,
 				),
 			})
 			log.Info("[LUCK] User %d get award %s",
-				user.Uid, resp.Data.AwardName)
+				user.UID, resp.Data.AwardName)
 		}
 	}
 	if len(data) == 0 {
-		log.Info("Lottery id %d no award", resp.Data.Id)
+		log.Info("Lottery id %d no award", resp.Data.ID)
 	}
 	return data, nil
 }

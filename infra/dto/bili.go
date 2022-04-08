@@ -9,7 +9,7 @@ type BiliBaseResp struct {
 
 // User info of bilibili
 type User struct {
-	Uid   int32  `json:"uid"`
+	UID   int32  `json:"uid"`
 	Uname string `json:"uname"`
 	Level int32  `json:"level"`
 	Color int32  `json:"color"`
@@ -17,8 +17,8 @@ type User struct {
 
 // Anchor represents live anchor lottery
 type Anchor struct {
-	Id           int32  `json:"id"`
-	RoomId       int32  `json:"room_id"`
+	ID           int32  `json:"id"`
+	RoomID       int32  `json:"room_id"`
 	Status       int32  `json:"status"`
 	AwardName    string `json:"award_name"`
 	AwardNum     int32  `json:"award_num"`
@@ -30,7 +30,7 @@ type Anchor struct {
 	RequireType  int32  `json:"require_type"`
 	RequireValue int32  `json:"require_value"`
 	RequireText  string `json:"require_text"`
-	GiftId       int32  `json:"gift_id"`
+	GiftID       int32  `json:"gift_id"`
 	GiftName     string `json:"gift_name"`
 	GiftNum      int32  `json:"gift_num"`
 	GiftPrice    int32  `json:"gift_price"`
@@ -40,14 +40,34 @@ type Anchor struct {
 	ShowPanel    int32  `json:"show_panel"`
 	LotStatus    int32  `json:"lot_status"`
 	SendGift     int32  `json:"send_gift_ensure"`
-	GoodsId      int32  `json:"goods_id"`
+	GoodsID      int32  `json:"goods_id"`
 }
 
 // RedPocket represents red pocket lottery
 type RedPocket struct {
-	RoomUid   int32 `json:"ruid"`
-	RoomId    int32 `json:"room_id"`
-	LotteryId int32 `json:"lot_id"`
+	LotteryID       int32  `json:"lot_id"`
+	SenderUID       int32  `json:"sender_uid"`
+	SenderName      string `json:"sender_name"`
+	JoinRequirement int32  `json:"join_requirement"`
+	Danmu           string `json:"danmu"`
+	CurrentTime     int32  `json:"current_time"`
+	StartTime       int32  `json:"start_time"`
+	EndTime         int32  `json:"end_time"`
+	LastTime        int32  `json:"last_time"`
+	RemoveTime      int32  `json:"remove_time"`
+	ReplaceTime     int32  `json:"replace_time"`
+	LotStatus       int32  `json:"lot_status"`
+	UserStatus      int32  `json:"user_status"`
+	Awards          []struct {
+		GiftID   int32  `json:"gift_id"`
+		GiftName string `json:"gift_name"`
+		Num      int32  `json:"num"`
+	} `json:"awards"`
+	LotConfigID int32 `json:"lot_config_id"`
+	TotalPrice  int32 `json:"total_price"`
+	WaitNum     int32 `json:"wait_num"`
+	UID         int32 `json:"uid"`
+	RoomiD      int32 `json:"roomid"`
 }
 
 // BiliAnchor is response body of anchor info
