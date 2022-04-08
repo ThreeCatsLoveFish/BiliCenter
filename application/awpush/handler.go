@@ -2,15 +2,9 @@ package awpush
 
 import (
 	"encoding/json"
-	"fmt"
-	"net/url"
-	"subcenter/domain"
-	"subcenter/domain/pull"
-	"subcenter/domain/push"
 	"subcenter/infra"
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
-	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -23,6 +17,7 @@ var handlerMap map[string]Handler
 func init() {
 	registerHandler("HAND_OUT_TASKS", HandleTasks)
 	registerHandler("HAND_OUT_ANCHOR_DATA", HandleAnchorData)
+	registerHandler("HAND_OUT_POPULARITY_REDPOCKET_DATA", HandleRedPocket)
 }
 
 func registerHandler(name string, handler Handler) {
@@ -102,82 +97,5 @@ func HandleTasks(client *AWPushClient, msg []byte) error {
 	}
 	client.sleep.Reset(time.Duration(task.Data.SleepTime) * time.Millisecond)
 	go taskCallBack(client.conn, task)
-	return nil
-}
-
-// filterCheckLottery abort blacklist lottery
-func filterCheckLottery(anchor dto.AnchorMsg) bool {
-	// Need to send gift
-	if len(anchor.Data.GiftName) > 0 {
-		return true
-	}
-	// Award is meaningless
-	for _, pat := range biliConfig.Filter.WordsPat {
-		if pat.MatchString(anchor.Data.AwardName) {
-			return true
-		}
-	}
-	// Live room is not safe
-	for _, id := range biliConfig.Filter.Rooms {
-		if anchor.Data.RoomId == id {
-			return true
-		}
-	}
-	// Safe lottery
-	return false
-}
-
-// joinLottery refers to bilibili live lottery
-func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
-	if filterCheckLottery(anchor) {
-		return
-	}
-	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Join"
-	data := url.Values{
-		"id":       []string{fmt.Sprint(anchor.Data.Id)},
-		"platform": []string{"pc"},
-	}
-	attend := false
-	for _, user := range biliConfig.Users {
-		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
-		if err != nil {
-			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
-			continue
-		}
-		var resp dto.BiliBaseResp
-		if err = json.Unmarshal(body, &resp); err != nil {
-			log.Error("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
-		}
-		if resp.Code == 0 {
-			log.Info("User %d join lottery %d success",
-				user.Uid, anchor.Data.Id)
-			attend = true
-			go func(task domain.Task, timer *time.Timer) {
-				<-timer.C
-				task.Execute()
-			}(domain.Task{
-				Pull: pull.NewBiliPull(anchor.Data.RoomId, user.Uid),
-				Push: push.NewPush(user.Push),
-			}, time.NewTimer(time.Duration(anchor.Data.Time+5)*time.Second))
-		} else {
-			log.Info("User %d join lottery %d failed because %s",
-				user.Uid, anchor.Data.Id, resp.Message)
-		}
-	}
-	if attend {
-		atomic.AddInt32(&client.join, 1)
-	}
-}
-
-// HandleAnchorData deal with anchor lottery message
-func HandleAnchorData(client *AWPushClient, msg []byte) error {
-	var anchor dto.AnchorMsg
-	if err := json.Unmarshal(msg, &anchor); err != nil {
-		log.Error("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
-		return err
-	}
-	client.sleep.Reset(time.Microsecond)
-	client.recv++
-	go joinLottery(client, anchor)
 	return nil
 }

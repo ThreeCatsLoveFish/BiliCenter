@@ -43,6 +43,13 @@ type Anchor struct {
 	GoodsId      int32  `json:"goods_id"`
 }
 
+// RedPocket represents red pocket lottery
+type RedPocket struct {
+	RoomUid   int32 `json:"ruid"`
+	RoomId    int32 `json:"room_id"`
+	LotteryId int32 `json:"lot_id"`
+}
+
 // BiliAnchor is response body of anchor info
 type BiliAnchor struct {
 	BiliBaseResp

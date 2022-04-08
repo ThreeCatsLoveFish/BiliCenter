@@ -48,6 +48,13 @@ type AnchorMsg struct {
 	Data Anchor `json:"data"`
 }
 
+// TaskMsg represents message contain poll task
+type RedPocketMsg struct {
+	RawMsg
+
+	Data RedPocket `json:"data"`
+}
+
 // Callback is used for response awpush poll task
 type Callback struct {
 	Code   string `json:"code"`

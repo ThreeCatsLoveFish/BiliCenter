@@ -105,7 +105,7 @@ func (tc *AWPushClient) Run() {
 				Title:   "# awpush report",
 				Content: fmt.Sprintf("Recv: %d, join: %d", tc.recv, tc.join),
 			})
-			tc.recv = 0
+			atomic.StoreInt32(&tc.recv, 0)
 			atomic.StoreInt32(&tc.join, 0)
 		}
 	}
