@@ -97,7 +97,6 @@ func taskSendBack(conn *websocket.Conn, task dto.TaskMsg) error {
 			Uid:    biliConfig.Uid,
 			Secret: task.Data.Secret,
 		},
-		Data: map[string]string{},
 	}
 	data, err := json.Marshal(resp)
 	if err != nil {
