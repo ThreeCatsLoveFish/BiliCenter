@@ -85,6 +85,29 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 		log.Error("Callback send error: %v", err)
 		return err
 	}
+	return taskSendBack(conn, task)
+}
+
+// taskSendBack send updated data
+func taskSendBack(conn *websocket.Conn, task dto.TaskMsg) error {
+	// Send updated message
+	resp := dto.UpdateData{
+		Callback: dto.Callback{
+			Code:   "UPDATE_ANCHOR_DATA",
+			Uid:    biliConfig.Uid,
+			Secret: task.Data.Secret,
+		},
+	}
+	data, err := json.Marshal(resp)
+	if err != nil {
+		log.Error("Marshal error: %v", err)
+		return err
+	}
+	err = conn.WriteMessage(websocket.BinaryMessage, infra.PakoDeflate(data))
+	if err != nil {
+		log.Error("Callback send error: %v", err)
+		return err
+	}
 	return nil
 }
 
