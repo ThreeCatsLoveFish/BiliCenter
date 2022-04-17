@@ -61,9 +61,3 @@ type Callback struct {
 	Uid    string `json:"uid"`
 	Secret string `json:"secret"`
 }
-
-// UpdateData is used for reporting new data
-type UpdateData struct {
-	Callback
-	Data map[string]string `json:"data"`
-}
