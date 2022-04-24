@@ -21,7 +21,20 @@ SubCenter is a middleware that integrates task subscriptions and real-time push
 
 ## Usage
 
-```bash
-git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
-make run
-```
+1. Clone source code
+   ```bash
+   git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
+   cd SubCenter
+   make build
+   ```
+1. Add config files
+   ```
+   config
+    ├─bili.toml
+    ├─push.toml
+    └─task.toml
+   ```
+1. Launch Sub-center
+   ```bash
+   make run
+   ```

@@ -27,5 +27,21 @@
 
 ```bash
 git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
+cd SubCenter
+make build
+```
+
+### 配置文件
+
+```
+config
+ ├─bili.toml
+ ├─push.toml
+ └─task.toml
+```
+
+### 运行程序
+
+```bash
 make run
 ```
