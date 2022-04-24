@@ -21,7 +21,8 @@ words = ["测试", "钓鱼"]
 
 [[awpush.users]]
 cookie = "TEST=asdfghjkl;" 
-push = "PUSH_DEER_SAMPLE" # Fill in this according to the content in push.toml
+# Fill in this according to `name` in push.toml
+push = "PUSH_DEER_SAMPLE"
 
 # Add more users below
 #

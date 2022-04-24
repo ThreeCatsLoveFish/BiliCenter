@@ -27,11 +27,14 @@ SubCenter is a middleware that integrates task subscriptions and real-time push
    cd SubCenter
    make build
    ```
-1. Add config files
+1. Add config files, fill in personal info and remove *.sample* suffix
    ```
    config
+    ├─bili.toml.sample
     ├─bili.toml
+    ├─push.toml.sample
     ├─push.toml
+    ├─task.toml.sample
     └─task.toml
    ```
 1. Launch Sub-center

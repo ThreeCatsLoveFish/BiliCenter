@@ -33,10 +33,15 @@ make build
 
 ### 配置文件
 
+填充配置文件内容并去掉 *.sample* 后缀
+
 ```
 config
+ ├─bili.toml.sample
  ├─bili.toml
+ ├─push.toml.sample
  ├─push.toml
+ ├─task.toml.sample
  └─task.toml
 ```
 
