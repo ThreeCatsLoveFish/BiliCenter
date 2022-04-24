@@ -1,0 +1,11 @@
+[[endpoints]]
+name = "PUSH_DEER_SAMPLE"
+token = "<YOUR-TOKEN-HERE>"
+type = "push_deer"
+url = "http://<pushdeer-url-or-ip>/message/push"
+
+[[endpoints]]
+name = "PUSH_PLUS_SAMPLE"
+token = "<YOUR-TOKEN-HERE>"
+type = "push_plus"
+url = "http://www.pushplus.plus/send"

@@ -1,0 +1,30 @@
+##############################
+# Basic auth info for AwPush #
+##############################
+
+[awpush]
+token = "<TOKEN-FOR-AwPush>"
+uid = "<UID-FOR-TOKEN>"
+wss = "wss://andywang.top:3001/ws"
+
+#######################
+# Blacklist of anchor #
+#######################
+
+[awpush.filter]
+rooms = [123]
+words = ["测试", "钓鱼"]
+
+####################
+# User Information #
+####################
+
+[[awpush.users]]
+cookie = "TEST=asdfghjkl;" 
+push = "PUSH_DEER_SAMPLE" # Fill in this according to the content in push.toml
+
+# Add more users below
+#
+# [[awpush.users]]
+# cookie = ""
+# push = "PUSH_PLUS_SAMPLE"

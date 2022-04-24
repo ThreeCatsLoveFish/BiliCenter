@@ -1,0 +1,7 @@
+# Can omit this file temporarily
+
+# [[tasks]]
+# init = true
+# period = 3600000000000
+# pull = "HeartBeat"
+# push = "PUSH_DEER_SAMPLE"
