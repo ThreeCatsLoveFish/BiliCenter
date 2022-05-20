@@ -78,7 +78,7 @@ func (tc *AWPushClient) Run() {
 			if tc.conn, err = establish(); err != nil {
 				log.Error("Establish failed, error: %v", err)
 				push.NewPush("threecats").Submit(push.Data{
-					Title:   "# awpush establish failed",
+					Title:   "# AWpush establish failed",
 					Content: err.Error(),
 				})
 				continue

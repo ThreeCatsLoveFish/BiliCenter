@@ -55,6 +55,7 @@ func HandleRedPocket(client *AWPushClient, msg []byte) error {
 	var redPocket dto.RedPocketMsg
 	if err := json.Unmarshal(msg, &redPocket); err != nil {
 		log.Error("Unmarshal RedPocketMsg error: %v, raw data: %s", err, string(msg))
+		client.sleep.Reset(time.Microsecond)
 		return err
 	}
 	client.sleep.Reset(time.Microsecond)

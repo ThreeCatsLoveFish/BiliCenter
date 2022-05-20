@@ -83,6 +83,7 @@ func HandleAnchorData(client *AWPushClient, msg []byte) error {
 	var anchor dto.AnchorMsg
 	if err := json.Unmarshal(msg, &anchor); err != nil {
 		log.Error("Unmarshal AnchorMsg error: %v, raw data: %s", err, string(msg))
+		client.sleep.Reset(time.Microsecond)
 		return err
 	}
 	client.sleep.Reset(time.Microsecond)
