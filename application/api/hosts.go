@@ -29,6 +29,7 @@ func UpdateHosts(c *gin.Context) {
 		if v.Hostname == host.Hostname {
 			hosts[i].IP = host.IP
 			c.Data(http.StatusOK, "text/plain", []byte("Success!"))
+			return
 		}
 	}
 	hosts = append(hosts, host)
