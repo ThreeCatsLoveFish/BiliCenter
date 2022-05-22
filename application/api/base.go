@@ -9,5 +9,5 @@ func LoadApi(router *gin.Engine) {
 	// Hadoop Hosts config
 	router.GET("/api/hadoop/hosts/list/", ListHosts)
 	router.POST("/api/hadoop/hosts/update/", UpdateHosts)
-	router.POST("/api/hadoop/hosts/reset/", UpdateHosts)
+	router.POST("/api/hadoop/hosts/reset/", ResetHosts)
 }
