@@ -45,7 +45,7 @@ func ResetHosts(c *gin.Context) {
 func ListHosts(c *gin.Context) {
 	var hostValue string
 	for _, v := range hosts {
-		hostValue += fmt.Sprintf("%s\t%s", v.IP, v.Hostname)
+		hostValue += fmt.Sprintf("%s\t%s\n", v.IP, v.Hostname)
 	}
 	c.Data(http.StatusOK, "text/plain", []byte(hostValue))
 }
