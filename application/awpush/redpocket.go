@@ -11,11 +11,14 @@ import (
 	"time"
 )
 
-func enterLiveRoom(roomId string, cookie string) error {
+func enterLiveRoom(roomId string, cookie string, csrf string) error {
 	rawUrl := "https://api.live.bilibili.com/xlive/web-room/v1/index/roomEntryAction"
 	data := url.Values{
-		"room_id":  []string{roomId},
-		"platform": []string{"pc"},
+		"room_id":    []string{roomId},
+		"platform":   []string{"pc"},
+		"csrf":       []string{csrf},
+		"csrf_token": []string{csrf},
+		"visit_id":   []string{""},
 	}
 	body, err := infra.PostFormWithCookie(rawUrl, cookie, data)
 	if err != nil {
@@ -55,7 +58,8 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 		"jump_from":  []string{""},
 	}
 	for _, user := range biliConfig.Users {
-		if err := enterLiveRoom(roomId, user.Cookie); err != nil {
+		if err := enterLiveRoom(roomId, user.Cookie, user.Csrf); err != nil {
+			log.Info("User %d enter live room %s error", user.Uid, roomId)
 			continue
 		}
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
