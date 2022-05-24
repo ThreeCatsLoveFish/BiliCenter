@@ -49,25 +49,21 @@ func (l *Live) listen() {
 	timer := time.NewTimer(5 * time.Minute)
 	<-timer.C
 	l.client.Close()
+	log.Info("Websocket leave room %d", l.roomID)
 }
 
-// RegisterHandlers 注册不同的事件处理
-// handler类型需要是定义在 websocket/handler_registration.go 中的类型，如:
-// - websocket.DanmakuHandler
-// - websocket.GiftHandler
-// - websocket.GuardHandler
 func (l *Live) registerHandlers(handlers ...interface{}) error {
 	return websocket.RegisterHandlers(handlers...)
 }
 
 // 发送进入房间请求
 func (l *Live) enterRoom(roomId int) {
-	log.Info("Websocket Enter room %d", roomId)
+	log.Info("Websocket enter room %d", roomId)
 	var err error
 	body, _ := json.Marshal(dto.WSEnterRoomBody{
 		UID:       12309253,
-		RoomID:    roomId, // 真实房间ID
-		ProtoVer:  1,      // 填1
+		RoomID:    roomId,
+		ProtoVer:  1,
 		Platform:  "web",
 		ClientVer: "1.6.3",
 	})
