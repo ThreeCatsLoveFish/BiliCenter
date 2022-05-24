@@ -61,13 +61,14 @@ func (l *Live) registerHandlers(handlers ...interface{}) error {
 }
 
 // 发送进入房间请求
-func (l *Live) enterRoom(id int) {
-	log.Info("Websocket Enter room %d", id)
+func (l *Live) enterRoom(roomId int) {
+	log.Info("Websocket Enter room %d", roomId)
 	// 忽略错误
 	var err error
 	body, _ := json.Marshal(dto.WSEnterRoomBody{
-		RoomID:    id, // 真实房间ID
-		ProtoVer:  1,  // 填1
+		UID:       12309253,
+		RoomID:    roomId, // 真实房间ID
+		ProtoVer:  1,      // 填1
 		Platform:  "web",
 		ClientVer: "1.6.3",
 	})
