@@ -2,6 +2,7 @@ package awpush
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"subcenter/infra"
@@ -10,10 +11,33 @@ import (
 	"time"
 )
 
+func enterLiveRoom(roomId string, cookie string) error {
+	rawUrl := "https://api.live.bilibili.com/xlive/web-room/v1/index/roomEntryAction"
+	data := url.Values{
+		"room_id":  []string{roomId},
+		"platform": []string{"pc"},
+	}
+	body, err := infra.PostFormWithCookie(rawUrl, cookie, data)
+	if err != nil {
+		log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
+		return err
+	}
+	var resp dto.BiliBaseResp
+	if err = json.Unmarshal(body, &resp); err != nil {
+		log.Error("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
+		return err
+	}
+	if resp.Code != 0 {
+		err = errors.New("Enter room error")
+		log.Error("EnterLiveRoom error: %v, raw data: %v", err, body)
+		return err
+	}
+	return nil
+}
+
 // joinRedPocket refers to bilibili live lottery
 func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/popularityRedPocket/RedPocketDraw"
-	// FIXME: modify this part to unify type
 	var roomId string
 	switch val := redPocket.Data.RoomID.(type) {
 	case string:
@@ -31,6 +55,9 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 		"jump_from":  []string{""},
 	}
 	for _, user := range biliConfig.Users {
+		if err := enterLiveRoom(roomId, user.Cookie); err != nil {
+			continue
+		}
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
@@ -59,6 +86,6 @@ func HandleRedPocket(client *AWPushClient, msg []byte) error {
 		return err
 	}
 	client.sleep.Reset(time.Microsecond)
-	// go joinRedPocket(client, redPocket)
+	go joinRedPocket(client, redPocket)
 	return nil
 }
