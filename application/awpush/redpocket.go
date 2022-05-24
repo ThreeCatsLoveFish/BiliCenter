@@ -62,6 +62,8 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 			log.Info("User %d enter live room %s error", user.Uid, roomId)
 			continue
 		}
+		timer := time.NewTimer(time.Second)
+		<- timer.C
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
@@ -79,6 +81,7 @@ func joinRedPocket(client *AWPushClient, redPocket dto.RedPocketMsg) {
 				user.Uid, redPocket.Data.LotteryID, resp.Message)
 		}
 	}
+	go listenRoom(roomId)
 }
 
 // HandleRedPocket deal with red pocket message
