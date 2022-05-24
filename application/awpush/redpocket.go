@@ -28,7 +28,7 @@ func enterLiveRoom(roomId string, cookie string) error {
 		return err
 	}
 	if resp.Code != 0 {
-		err = errors.New("Enter room error")
+		err = errors.New("response error")
 		log.Error("EnterLiveRoom error: %v, raw data: %v", err, body)
 		return err
 	}
