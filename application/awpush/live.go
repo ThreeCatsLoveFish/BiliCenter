@@ -63,7 +63,6 @@ func (l *Live) registerHandlers(handlers ...interface{}) error {
 // 发送进入房间请求
 func (l *Live) enterRoom(roomId int) {
 	log.Info("Websocket Enter room %d", roomId)
-	// 忽略错误
 	var err error
 	body, _ := json.Marshal(dto.WSEnterRoomBody{
 		UID:       12309253,
@@ -96,7 +95,5 @@ func listenRoom(roomId string) {
 }
 
 func danmakuHandler() websocket.DanmakuHandler {
-	return func(danmaku *dto.Danmaku) {
-		log.Info("%s: %s\n", danmaku.Uname, danmaku.Content)
-	}
+	return func(danmaku *dto.Danmaku) {}
 }
