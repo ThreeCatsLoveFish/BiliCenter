@@ -60,6 +60,7 @@ func HandleMsg(client *AWPushClient) error {
 	if rawMsg.Code != 0 {
 		log.Error("Server code not zero, error exist!")
 	}
+	log.Debug("Get message %v", rawMsg)
 	// Handle each kind of message
 	return getHandler(rawMsg.Type)(client, raw)
 }
@@ -95,7 +96,7 @@ func HandleTasks(client *AWPushClient, msg []byte) error {
 		log.Error("Unmarshal TaskMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
-	client.sleep.Reset(time.Duration(task.Data.SleepTime) * time.Millisecond)
+	client.sleep.Reset(15 * time.Second)
 	go taskCallBack(client.conn, task)
 	return nil
 }
