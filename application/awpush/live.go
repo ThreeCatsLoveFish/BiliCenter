@@ -39,12 +39,10 @@ func (l *Live) listen() {
 		return
 	}
 
-	go l.enterRoom(id)
-
-	if err := l.client.Listening(); err != nil {
-		log.Error("Listen ws fail: %v", err)
-		return
-	}
+	go func() {
+		l.enterRoom(id)
+		l.client.Listening()
+	}()
 
 	timer := time.NewTimer(5 * time.Minute)
 	<-timer.C
