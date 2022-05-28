@@ -147,7 +147,14 @@ func UpdateRelation() interface{} {
 		log.Info("Update relation success for user %d", user.Uid)
 	}
 	if len(fail) == 0 {
-		return nil
+		return map[string]interface{}{
+			"code":   0,
+			"status": "Update relation success",
+		}
 	}
-	return fail
+	return map[string]interface{}{
+		"code":   5,
+		"status": "Update relation fail",
+		"data":   fail,
+	}
 }

@@ -9,6 +9,5 @@ import (
 
 // UpdateRelation update bilibili account relation
 func UpdateRelation(c *gin.Context) {
-	awpush.UpdateRelation()
-	c.Data(http.StatusOK, "text/plain", []byte("Success!"))
+	c.JSON(http.StatusOK, awpush.UpdateRelation())
 }
