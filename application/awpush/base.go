@@ -75,6 +75,10 @@ func (tc *AWPushClient) Run() {
 	for {
 		select {
 		case <-tc.reset.C:
+			if tc.conn != nil {
+				tc.conn.Close()
+				tc.conn = nil
+			}
 			if tc.conn, err = establish(); err != nil {
 				log.Error("Establish failed, error: %v", err)
 				push.NewPush("threecats").Submit(push.Data{
