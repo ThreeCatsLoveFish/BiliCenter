@@ -12,7 +12,7 @@ import (
 const tagName = "BLTH天选关注UP"
 
 // createNewTag open a new tag with prefix of BLTH
-func createNewTag(user User) int32 {
+func createNewTag(user User) int {
 	rawUrl := "https://api.bilibili.com/x/relation/tag/create"
 	data := url.Values{
 		"tag":  []string{tagName},
@@ -37,7 +37,7 @@ func createNewTag(user User) int32 {
 }
 
 // getTagId find the tag id of BLTH, if not found then create new tag
-func getTagId(user User) int32 {
+func getTagId(user User) int {
 	rawUrl := "https://api.bilibili.com/x/relation/tags"
 	body, err := infra.Get(rawUrl, user.Cookie, nil)
 	if err != nil {
@@ -116,7 +116,7 @@ func getRelation(user User) (string, error) {
 // UpdateRelation traverse all account and update relation
 func UpdateRelation() interface{} {
 	type result struct {
-		Uid   int32 `json:"uid"`
+		Uid   int   `json:"uid"`
 		Error error `json:"err"`
 	}
 	fail := make([]result, 0)

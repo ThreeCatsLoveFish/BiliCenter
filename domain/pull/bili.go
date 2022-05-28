@@ -11,11 +11,11 @@ import (
 )
 
 type BiliPull struct {
-	roomid int32
-	uid    int32
+	roomid int
+	uid    int
 }
 
-func NewBiliPull(roomid int32, uid int32) BiliPull {
+func NewBiliPull(roomid, uid int) BiliPull {
 	return BiliPull{roomid, uid}
 }
 

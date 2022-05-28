@@ -12,7 +12,7 @@ import (
 var biliConfig BiliConfig
 
 type User struct {
-	Uid    int32
+	Uid    int
 	Csrf   string
 	Cookie string `config:"cookie"`
 	Push   string `config:"push"`
@@ -20,7 +20,7 @@ type User struct {
 
 // LiveFilter store rooms and words with which lottery won't be join
 type LiveFilter struct {
-	Rooms    []int32  `config:"rooms"`
+	Rooms    []int    `config:"rooms"`
 	Words    []string `config:"words"`
 	WordsPat []*regexp.Regexp
 }
@@ -72,7 +72,7 @@ func initAWPush() {
 		if err != nil {
 			panic("uid parse err")
 		}
-		biliConfig.Users[idx].Uid = int32(num)
+		biliConfig.Users[idx].Uid = int(num)
 		biliConfig.Users[idx].Csrf = csrf.Value
 	}
 }
