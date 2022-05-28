@@ -7,7 +7,7 @@ import (
 // LoadApi add router for api service
 func LoadApi(router *gin.Engine) {
 	// Bili account helper
-	router.GET("/api/bili/account/clean/", ListHosts)
+	router.GET("/api/bili/account/clean/", UpdateRelation)
 
 	// Hadoop Hosts config
 	router.GET("/api/hadoop/hosts/list/", ListHosts)
