@@ -30,7 +30,7 @@ func NewAWPushClient() AWPushClient {
 	return AWPushClient{
 		conn:    nil,
 		report:  log.NewDayTicker(),
-		timeout: time.NewTicker(time.Second * 15),
+		timeout: time.NewTicker(time.Second * 30),
 		reset:   time.NewTimer(time.Microsecond),
 		sleep:   time.NewTimer(time.Second),
 	}
