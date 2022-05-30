@@ -95,7 +95,7 @@ func HandleTasks(client *AWPushClient, msg []byte) error {
 		log.Error("Unmarshal TaskMsg error: %v, raw data: %s", err, string(msg))
 		return err
 	}
-	client.sleep.Reset(5 * time.Second)
+	client.sleep.Reset(time.Microsecond)
 	go taskCallBack(client.conn, task)
 	return nil
 }
