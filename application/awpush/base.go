@@ -23,14 +23,14 @@ type AWPushClient struct {
 	report  *log.DayTicker // report lottery status
 	reset   *time.Timer    // reconnect awpush server
 	sleep   *time.Timer    // sleep before handle next message
-	timeout *time.Ticker   // send heartbeat
+	timeout *time.Timer    // send heartbeat
 }
 
 func NewAWPushClient() AWPushClient {
 	return AWPushClient{
 		conn:    nil,
 		report:  log.NewDayTicker(),
-		timeout: time.NewTicker(time.Second * 30),
+		timeout: time.NewTimer(time.Second * 30),
 		reset:   time.NewTimer(time.Microsecond),
 		sleep:   time.NewTimer(time.Second),
 	}
@@ -58,15 +58,11 @@ func establish() (ws *websocket.Conn, err error) {
 	if err != nil {
 		log.Error("Ping failed, error: %v", err)
 	}
-	err = infra.Pong(conn)
-	if err != nil {
-		log.Error("Pong failed, error: %v", err)
-	}
 	err = infra.Verify(conn, biliConfig.Uid, biliConfig.Token)
 	if err != nil {
 		log.Error("Verify failed, error: %v", err)
 	}
-	log.Info("AwPush Verify success")
+	log.Info("AwPush Verify sent")
 	return conn, err
 }
 

@@ -46,7 +46,8 @@ func HandleMsg(client *AWPushClient) error {
 	}
 	// Process pong signal
 	if string(msg) == "pong" {
-		log.Debug("Heartbeat received")
+		log.Info("Heartbeat received")
+		client.timeout.Reset(30 * time.Second)
 		client.sleep.Reset(time.Microsecond)
 		return nil
 	}
