@@ -66,7 +66,20 @@ func establish() (ws *websocket.Conn, err error) {
 	return conn, err
 }
 
+func (tc *AWPushClient) Heartbeat() {
+	var err error
+	for range tc.timeout.C {
+		if err = infra.Ping(tc.conn); err != nil {
+			log.Error("send heartbeat error: %v", err)
+			tc.reset.Reset(time.Microsecond)
+			continue
+		}
+		log.Debug("Heartbeat sent")
+	}
+}
+
 func (tc *AWPushClient) Run() {
+	go tc.Heartbeat()
 	var err error
 	for {
 		select {
@@ -84,13 +97,6 @@ func (tc *AWPushClient) Run() {
 				continue
 			}
 			log.Debug("Reconnect success")
-		case <-tc.timeout.C:
-			if err = infra.Ping(tc.conn); err != nil {
-				log.Error("send heartbeat error: %v", err)
-				tc.reset.Reset(time.Microsecond)
-				continue
-			}
-			log.Debug("Heartbeat sent")
 		case <-tc.sleep.C:
 			if err = HandleMsg(tc); err != nil {
 				log.Error("handle failed, error: %v", err)
