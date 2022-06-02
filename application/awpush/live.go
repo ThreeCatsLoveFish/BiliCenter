@@ -7,9 +7,14 @@ import (
 	"time"
 
 	"github.com/botplayerneo/bili-live-api/dto"
+	live_log "github.com/botplayerneo/bili-live-api/log"
 	"github.com/botplayerneo/bili-live-api/resource"
 	"github.com/botplayerneo/bili-live-api/websocket"
 )
+
+func init() {
+	live_log.DefaultLogger = log.AsyncLogger{}
+}
 
 type Live struct {
 	client *websocket.Client

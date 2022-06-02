@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/BurntSushi/toml v1.0.0 // indirect
-	github.com/botplayerneo/bili-live-api v0.1.2 // indirect
+	github.com/botplayerneo/bili-live-api v0.1.2
 	github.com/gin-gonic/gin v1.7.7
 	github.com/gookit/config/v2 v2.0.27
 	github.com/gookit/goutil v0.4.4 // indirect
