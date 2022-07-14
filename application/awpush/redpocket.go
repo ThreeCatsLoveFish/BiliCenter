@@ -93,6 +93,6 @@ func HandleRedPocket(client *AWPushClient, msg []byte) error {
 		return err
 	}
 	client.sleep.Reset(time.Microsecond)
-	go joinRedPocket(client, redPocket)
+	// go joinRedPocket(client, redPocket)
 	return nil
 }
