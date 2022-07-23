@@ -2,6 +2,6 @@
 
 # [[tasks]]
 # init = true
-# cron = "3 2 1 * *"
+# cron = "@daily"
 # pull = "MedalHelper"
 # push = "PUSH_DEER_SAMPLE"
