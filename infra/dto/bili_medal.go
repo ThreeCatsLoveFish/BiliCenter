@@ -69,105 +69,113 @@ type BiliMedalResp struct {
 	} `json:"data"`
 }
 
-// BiliAccountResp represent account mine response
-type BiliAccountResp struct {
-	BiliBaseResp
-	Data struct {
-		Mid               int     `json:"mid"`
-		Name              string  `json:"name"`
-		ShowNameGuide     bool    `json:"show_name_guide"`
-		Face              string  `json:"face"`
-		ShowFaceGuide     bool    `json:"show_face_guide"`
-		Coin              float64 `json:"coin"`
-		Bcoin             int     `json:"bcoin"`
-		Sex               int     `json:"sex"`
-		Rank              int     `json:"rank"`
-		Silence           int     `json:"silence"`
-		ShowVideoup       int     `json:"show_videoup"`
-		ShowCreative      int     `json:"show_creative"`
-		Level             int     `json:"level"`
-		VipType           int     `json:"vip_type"`
-		AudioType         int     `json:"audio_type"`
-		Dynamic           int     `json:"dynamic"`
-		Following         int     `json:"following"`
-		Follower          int     `json:"follower"`
-		NewFollowers      int     `json:"new_followers"`
-		NewFollowersRtime int     `json:"new_followers_rtime"`
-		OfficialVerify    struct {
-			Type int    `json:"type"`
-			Desc string `json:"desc"`
-		} `json:"official_verify"`
-		Vip struct {
-			Type       int   `json:"type"`
-			Status     int   `json:"status"`
-			DueDate    int64 `json:"due_date"`
-			VipPayType int   `json:"vip_pay_type"`
-			ThemeType  int   `json:"theme_type"`
-			Label      struct {
-				Path        string `json:"path"`
-				Text        string `json:"text"`
-				LabelTheme  string `json:"label_theme"`
-				TextColor   string `json:"text_color"`
-				BgStyle     int    `json:"bg_style"`
-				BgColor     string `json:"bg_color"`
-				BorderColor string `json:"border_color"`
-			} `json:"label"`
-			AvatarSubscript    int    `json:"avatar_subscript"`
-			NicknameColor      string `json:"nickname_color"`
-			Role               int    `json:"role"`
-			AvatarSubscriptURL string `json:"avatar_subscript_url"`
-		} `json:"vip"`
-		InRegAudit       int  `json:"in_reg_audit"`
-		FirstLiveTime    int  `json:"first_live_time"`
-		FaceNftNew       int  `json:"face_nft_new"`
-		ShowNftFaceGuide bool `json:"show_nft_face_guide"`
-		SeniorGate       struct {
-			Identity   int    `json:"identity"`
-			MemberText string `json:"member_text"`
-		} `json:"senior_gate"`
-	} `json:"data"`
-}
-
 // BiliUserInfo represent user live info
 type BiliLiveUserInfo struct {
 	BiliBaseResp
 	Data struct {
-		UID    int `json:"uid"`
-		Silver int `json:"silver"`
-		Gold   int `json:"gold"`
-		Medal  struct {
-			MedalName        string `json:"medal_name"`
-			Level            int    `json:"level"`
-			Color            int    `json:"color"`
-			MedalIconURL     string `json:"medal_icon_url"`
-			TargetID         int    `json:"target_id"`
-			MedalColorStart  int    `json:"medal_color_start"`
-			MedalColorEnd    int    `json:"medal_color_end"`
-			MedalColorBorder int    `json:"medal_color_border"`
-			IsLighted        int    `json:"is_lighted"`
-			GuardLevel       int    `json:"guard_level"`
-			GuardIcon        string `json:"guard_icon"`
-			HonorIcon        string `json:"honor_icon"`
-		} `json:"medal"`
-		Vip struct {
-			Vip      int    `json:"vip"`
-			Svip     int    `json:"svip"`
-			VipTime  string `json:"vip_time"`
-			SvipTime string `json:"svip_time"`
-		} `json:"vip"`
-		WearTitle struct {
-			ID  string `json:"id"`
-			Img string `json:"img"`
-		} `json:"wear_title"`
-		Exp struct {
-			Color         int `json:"color"`
-			UserLevel     int `json:"user_level"`
-			Cost          int `json:"cost"`
-			Unext         int `json:"unext"`
-			UserLevelCost int `json:"user_level_cost"`
-		} `json:"exp"`
-		RoomID        int  `json:"room_id"`
-		VipViewStatus bool `json:"vip_view_status"`
-		GuardCount    int  `json:"guard_count"`
+		UID              int     `json:"uid"`
+		Uname            string  `json:"uname"`
+		Face             string  `json:"face"`
+		BillCoin         float64 `json:"billCoin"`
+		Silver           int     `json:"silver"`
+		Gold             int     `json:"gold"`
+		Achieve          int     `json:"achieve"`
+		Vip              int     `json:"vip"`
+		Svip             int     `json:"svip"`
+		UserLevel        int     `json:"user_level"`
+		UserNextLevel    int     `json:"user_next_level"`
+		UserIntimacy     int     `json:"user_intimacy"`
+		UserNextIntimacy int     `json:"user_next_intimacy"`
+		IsLevelTop       int     `json:"is_level_top"`
+		UserLevelRank    string  `json:"user_level_rank"`
+		UserCharged      int     `json:"user_charged"`
+		Identification   int     `json:"identification"`
+	} `json:"data"`
+}
+
+type BiliLiveRoomInfo struct {
+	BiliBaseResp
+	Data    struct {
+		UID              int      `json:"uid"`
+		RoomID           int      `json:"room_id"`
+		ShortID          int      `json:"short_id"`
+		Attention        int      `json:"attention"`
+		Online           int      `json:"online"`
+		IsPortrait       bool     `json:"is_portrait"`
+		Description      string   `json:"description"`
+		LiveStatus       int      `json:"live_status"`
+		AreaID           int      `json:"area_id"`
+		ParentAreaID     int      `json:"parent_area_id"`
+		ParentAreaName   string   `json:"parent_area_name"`
+		OldAreaID        int      `json:"old_area_id"`
+		Background       string   `json:"background"`
+		Title            string   `json:"title"`
+		UserCover        string   `json:"user_cover"`
+		Keyframe         string   `json:"keyframe"`
+		IsStrictRoom     bool     `json:"is_strict_room"`
+		LiveTime         string   `json:"live_time"`
+		Tags             string   `json:"tags"`
+		IsAnchor         int      `json:"is_anchor"`
+		RoomSilentType   string   `json:"room_silent_type"`
+		RoomSilentLevel  int      `json:"room_silent_level"`
+		RoomSilentSecond int      `json:"room_silent_second"`
+		AreaName         string   `json:"area_name"`
+		Pendants         string   `json:"pendants"`
+		AreaPendants     string   `json:"area_pendants"`
+		HotWords         []string `json:"hot_words"`
+		HotWordsStatus   int      `json:"hot_words_status"`
+		Verify           string   `json:"verify"`
+		NewPendants      struct {
+			Frame struct {
+				Name       string `json:"name"`
+				Value      string `json:"value"`
+				Position   int    `json:"position"`
+				Desc       string `json:"desc"`
+				Area       int    `json:"area"`
+				AreaOld    int    `json:"area_old"`
+				BgColor    string `json:"bg_color"`
+				BgPic      string `json:"bg_pic"`
+				UseOldArea bool   `json:"use_old_area"`
+			} `json:"frame"`
+			Badge struct {
+				Name     string `json:"name"`
+				Position int    `json:"position"`
+				Value    string `json:"value"`
+				Desc     string `json:"desc"`
+			} `json:"badge"`
+			MobileFrame struct {
+				Name       string `json:"name"`
+				Value      string `json:"value"`
+				Position   int    `json:"position"`
+				Desc       string `json:"desc"`
+				Area       int    `json:"area"`
+				AreaOld    int    `json:"area_old"`
+				BgColor    string `json:"bg_color"`
+				BgPic      string `json:"bg_pic"`
+				UseOldArea bool   `json:"use_old_area"`
+			} `json:"mobile_frame"`
+			MobileBadge interface{} `json:"mobile_badge"`
+		} `json:"new_pendants"`
+		UpSession            string `json:"up_session"`
+		PkStatus             int    `json:"pk_status"`
+		PkID                 int    `json:"pk_id"`
+		BattleID             int    `json:"battle_id"`
+		AllowChangeAreaTime  int    `json:"allow_change_area_time"`
+		AllowUploadCoverTime int    `json:"allow_upload_cover_time"`
+		StudioInfo           struct {
+			Status     int           `json:"status"`
+			MasterList []interface{} `json:"master_list"`
+		} `json:"studio_info"`
+	} `json:"data"`
+}
+
+type BiliHeartBeatResp struct {
+	BiliBaseResp
+	Data struct {
+		Timestamp         int    `json:"timestamp"`
+		HeartbeatInterval int    `json:"heartbeat_interval"`
+		SecretKey         string `json:"secret_key"`
+		SecretRule        []int  `json:"secret_rule"`
+		PatchStatus       int    `json:"patch_status"`
 	} `json:"data"`
 }

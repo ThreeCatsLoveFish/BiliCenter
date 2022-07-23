@@ -1,11 +1,8 @@
 package service
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"sync"
-	"time"
 
 	"subcenter/application/medalhelper/manager"
 	"subcenter/domain/push"
@@ -13,10 +10,7 @@ import (
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
 
-	"github.com/TwiN/go-color"
 	"github.com/google/uuid"
-	"github.com/sethvargo/go-retry"
-	"github.com/tidwall/gjson"
 )
 
 type Account struct {
@@ -53,46 +47,24 @@ func NewAccount(user conf.User) Account {
 }
 
 func (account Account) info(format string, v ...interface{}) {
-	format = color.Green + "[INFO] " + color.Reset + format
-	format = color.Reset + color.Blue + account.Name + color.Reset + " " + format
-	log.PrintColor(format, v...)
+	format = account.Name + " " + format
+	log.Info(format, v...)
 }
 
 func (account *Account) loginVerify() bool {
-	resp, err := manager.LoginVerify(account.user)
-	if err != nil || resp.Data.Mid == 0 {
-		account.isLogin = false
-		return false
-	}
-	account.Uid = resp.Data.Mid
-	account.Name = resp.Data.Name
-	account.isLogin = true
-	account.info("登录成功")
-	return true
-}
-
-func (account *Account) signIn() error {
-	signInfo, err := manager.SignIn(account.user)
-	if err != nil {
-		return nil
-	}
-	resp := gjson.Parse(signInfo)
-	if resp.Get("code").Int() == 0 {
-		signed := resp.Get("data.hadSignDays").String()
-		all := resp.Get("data.allDays").String()
-		account.info("签到成功, 本月签到次数: %s/%s", signed, all)
-	} else {
-		account.info("%s", resp.Get("message").String())
-	}
-
 	userInfo, err := manager.GetUserInfo(account.user)
 	if err != nil {
-		return nil
+		return false
 	}
-	level := userInfo.Data.Exp.UserLevel
-	unext := userInfo.Data.Exp.Unext
-	account.info("当前用户UL等级: %d, 还差 %d 经验升级", level, unext)
-	return nil
+	account.isLogin = true
+	account.Uid = userInfo.Data.UID
+	account.Name = userInfo.Data.Uname
+	account.info("登录成功")
+
+	if _, err := manager.SignIn(account.user); err == nil {
+		account.info("签到成功")
+	}
+	return true
 }
 
 func (account *Account) setMedals() {
@@ -148,21 +120,21 @@ func (account *Account) report() {
 
 func (account *Account) Init() bool {
 	if account.loginVerify() {
-		account.signIn()
 		account.setMedals()
-		return true
 	} else {
+		msg := fmt.Sprintf("用户Cookie过期: %s", account.user.Cookie)
 		pushEnd := push.NewPush(account.user.Push)
-		msg := fmt.Sprintf("用户登录失败, cookie: %s", account.user.Cookie)
 		pushEnd.Submit(push.Data{
-			Title:   "# 用户登录失败",
-			Content: msg,
+			Title:   "# 用户Cookie过期",
+			Content: "请主动联系管理员更新Cookie",
 		})
+		account.info(msg)
 		return false
 	}
+	return true
 }
 
-func (account *Account) RunOnce() bool {
+func (account *Account) Run() bool {
 	task := NewTask(*account, []IAction{
 		&ALike{},
 		&Danmaku{},
@@ -174,14 +146,7 @@ func (account *Account) RunOnce() bool {
 
 func (account *Account) Start(wg *sync.WaitGroup) {
 	if account.isLogin {
-		backOff := retry.NewConstant(5 * time.Second)
-		backOff = retry.WithMaxRetries(3, backOff)
-		retry.Do(context.Background(), backOff, func(ctx context.Context) error {
-			if ok := account.RunOnce(); !ok {
-				return retry.RetryableError(errors.New("task not complete"))
-			}
-			return nil
-		})
+		account.Run()
 		account.report()
 	} else {
 		log.Error("用户未登录, cookie: %s", account.user.Cookie)

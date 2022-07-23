@@ -20,5 +20,5 @@ func RandomString(length int) (sink string) {
 
 // GetTimestamp can obtain current ts
 func GetTimestamp() string {
-	return fmt.Sprintf("%d", time.Now().Unix())
+	return fmt.Sprintf("%d", time.Now().UnixMilli())
 }

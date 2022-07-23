@@ -62,16 +62,11 @@ type WatchLive struct {
 }
 
 func (WatchLive) Do(account Account, medal dto.MedalInfo) bool {
+	room, heartbeat := manager.E(account.user, account.uuid, medal.RoomInfo.RoomID)
+	time.Sleep(1 * time.Minute)
 	times := 80
 	for i := 0; i < times; i++ {
-		if ok := manager.Heartbeat(
-			account.user,
-			account.uuid,
-			medal.RoomInfo.RoomID,
-			medal.Medal.TargetID,
-		); !ok {
-			return false
-		}
+		heartbeat = manager.X(account.user, account.uuid, i, room, heartbeat)
 		account.info("%s 房间心跳包已发送(%d/%d)", medal.AnchorInfo.NickName, i+1, times)
 		time.Sleep(1 * time.Minute)
 	}

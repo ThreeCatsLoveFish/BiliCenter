@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v1.0.0 // indirect
 	github.com/TwiN/go-color v1.1.0
 	github.com/botplayerneo/bili-live-api v0.1.2
+	github.com/dop251/goja v0.0.0-20220722151623-4765a9872229
 	github.com/gin-gonic/gin v1.7.7
 	github.com/google/uuid v1.3.0
 	github.com/gookit/config/v2 v2.0.27

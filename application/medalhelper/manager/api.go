@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strings"
-	"time"
 
 	"subcenter/infra"
 	"subcenter/infra/conf"
@@ -13,47 +11,28 @@ import (
 	"subcenter/infra/log"
 )
 
-func LoginVerify(user conf.User) (dto.BiliAccountResp, error) {
-	rawUrl := "https://app.bilibili.com/x/v2/account/mine"
+func SignIn(user conf.User) (dto.BiliBaseResp, error) {
+	rawUrl := "https://api.live.bilibili.com/xlive/web-ucenter/v1/sign/DoSign"
 	data := url.Values{
-		"platform":   []string{"pc"},
-		"csrf":       []string{user.Csrf},
-		"csrf_token": []string{user.Csrf},
+		"platform": []string{"pc"},
 	}
-	var resp dto.BiliAccountResp
 	body, err := infra.Get(rawUrl, user.Cookie, data)
+	var resp dto.BiliBaseResp
 	if err != nil {
-		log.Error("LoginVerify error: %v, data: %v", err, data)
+		log.Error("GetUserInfo error: %v, data: %v", err, data)
 		return resp, err
 	}
 	if err = json.Unmarshal(body, &resp); err != nil {
-		log.Error("Unmarshal BiliAccountResp error: %v, raw data: %v", err, body)
+		log.Error("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
 		return resp, err
 	}
 	return resp, nil
 }
 
-func SignIn(user conf.User) (string, error) {
-	rawUrl := "https://api.live.bilibili.com/rc/v1/Sign/doSign"
-	data := url.Values{
-		"platform":   []string{"pc"},
-		"csrf":       []string{user.Csrf},
-		"csrf_token": []string{user.Csrf},
-	}
-	body, err := infra.Get(rawUrl, user.Cookie, data)
-	if err != nil {
-		log.Error("SignIn error: %v, data: %v", err, data)
-		return "", err
-	}
-	return string(body), nil
-}
-
 func GetUserInfo(user conf.User) (dto.BiliLiveUserInfo, error) {
-	rawUrl := "https://api.live.bilibili.com/xlive/app-ucenter/v1/user/get_user_info"
+	rawUrl := "https://api.live.bilibili.com/xlive/web-ucenter/user/get_user_info"
 	data := url.Values{
-		"platform":   []string{"pc"},
-		"csrf":       []string{user.Csrf},
-		"csrf_token": []string{user.Csrf},
+		"platform": []string{"pc"},
 	}
 	body, err := infra.Get(rawUrl, user.Cookie, data)
 	var resp dto.BiliLiveUserInfo
@@ -68,6 +47,25 @@ func GetUserInfo(user conf.User) (dto.BiliLiveUserInfo, error) {
 	return resp, nil
 }
 
+func GetRoomInfo(user conf.User, roomId int) (dto.BiliLiveRoomInfo, error) {
+	rawUrl := "https://api.live.bilibili.com/room/v1/Room/get_info"
+	data := url.Values{
+		"room_id": []string{fmt.Sprint(roomId)},
+		"from":    []string{"room"},
+	}
+	body, err := infra.Get(rawUrl, user.Cookie, data)
+	var resp dto.BiliLiveRoomInfo
+	if err != nil {
+		log.Error("GetUserInfo error: %v, data: %v", err, data)
+		return resp, err
+	}
+	if err = json.Unmarshal(body, &resp); err != nil {
+		log.Error("Unmarshal BiliLiveRoomInfo error: %v, raw data: %v", err, body)
+		return resp, err
+	}
+	return resp, nil
+}
+
 func GetMedal(user conf.User) ([]dto.MedalInfo, bool) {
 	medals := make([]dto.MedalInfo, 0, 20)
 	wear := false
@@ -75,13 +73,10 @@ func GetMedal(user conf.User) ([]dto.MedalInfo, bool) {
 	for {
 		rawUrl := "https://api.live.bilibili.com/xlive/app-ucenter/v1/fansMedal/panel"
 		data := url.Values{
-			"platform":   []string{"pc"},
-			"csrf":       []string{user.Csrf},
-			"csrf_token": []string{user.Csrf},
-			"page":       []string{fmt.Sprint(page)},
-			"page_size":  []string{"50"},
+			"page":      []string{fmt.Sprint(page)},
+			"page_size": []string{"50"},
 		}
-		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
+		body, err := infra.Get(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("GetFansMedalAndRoomID error: %v, data: %v", err, data)
 			return medals, wear
@@ -107,7 +102,6 @@ func GetMedal(user conf.User) ([]dto.MedalInfo, bool) {
 func WearMedal(user conf.User, medalId int) bool {
 	rawUrl := "https://api.live.bilibili.com/xlive/app-ucenter/v1/fansMedal/wear"
 	data := url.Values{
-		"platform":   []string{"pc"},
 		"medal_id":   []string{fmt.Sprint(medalId)},
 		"csrf":       []string{user.Csrf},
 		"csrf_token": []string{user.Csrf},
@@ -126,7 +120,6 @@ func WearMedal(user conf.User, medalId int) bool {
 func TakeoffMedal(user conf.User) bool {
 	rawUrl := "https://api.live.bilibili.com/xlive/app-ucenter/v1/fansMedal/take_off"
 	data := url.Values{
-		"platform":   []string{"pc"},
 		"csrf":       []string{user.Csrf},
 		"csrf_token": []string{user.Csrf},
 	}
@@ -144,7 +137,6 @@ func TakeoffMedal(user conf.User) bool {
 func LikeInteract(user conf.User, roomId int) bool {
 	rawUrl := "https://api.live.bilibili.com/xlive/web-ucenter/v1/interact/likeInteract"
 	data := url.Values{
-		"platform":   []string{"pc"},
 		"roomid":     []string{fmt.Sprint(roomId)},
 		"csrf":       []string{user.Csrf},
 		"csrf_token": []string{user.Csrf},
@@ -183,45 +175,68 @@ func SendDanmaku(user conf.User, roomId int) bool {
 	return resp.Code == 0
 }
 
-func Heartbeat(user conf.User, uuids []string, roomId, upId int) bool {
-	rawUrl := "https://live-trace.bilibili.com/xlive/data-interface/v1/heartbeat/mobileHeartBeat"
+func E(user conf.User, uuids []string, roomId int) (dto.BiliLiveRoomInfo, dto.BiliHeartBeatResp) {
+	room, _ := GetRoomInfo(user, roomId)
+	rawUrl := "https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/E"
 	data := url.Values{
-		"platform":         []string{"pc"},
-		"uuid":             []string{uuids[0]},
-		"buvid":            []string{strings.ToUpper(RandomString(37))},
-		"seq_id":           []string{"1"},
-		"room_id":          []string{fmt.Sprint(roomId)},
-		"parent_id":        []string{"6"},
-		"area_id":          []string{"283"},
-		"timestamp":        []string{fmt.Sprintf("%d", time.Now().Unix()-60)},
-		"secret_key":       []string{"axoaadsffcazxksectbbb"},
-		"watch_time":       []string{"60"},
-		"up_id":            []string{fmt.Sprint(upId)},
-		"up_level":         []string{"40"},
-		"jump_from":        []string{"30000"},
-		"gu_id":            []string{strings.ToUpper(RandomString(43))},
-		"play_type":        []string{"0"},
-		"play_url":         []string{""},
-		"s_time":           []string{"0"},
-		"data_behavior_id": []string{""},
-		"data_source_id":   []string{""},
-		"up_session":       []string{fmt.Sprintf("l:one:live:record:%d:%d", roomId, time.Now().Unix()-88888)},
-		"visit_id":         []string{strings.ToUpper(RandomString(32))},
-		"watch_status":     []string{"%7B%22pk_id%22%3A0%2C%22screen_status%22%3A1%7D"},
-		"click_id":         []string{uuids[1]},
-		"session_id":       []string{""},
-		"player_type":      []string{"0"},
-		"client_ts":        []string{GetTimestamp()},
-		"csrf":             []string{user.Csrf},
-		"csrf_token":       []string{user.Csrf},
+		"id": []string{fmt.Sprintf("[%d,%d,0,%d]",
+			room.Data.ParentAreaID, room.Data.AreaID, room.Data.RoomID)},
+		"device":     []string{fmt.Sprintf("[\"%s\",\"%s\"]", user.Buvid, uuids[0])},
+		"ts":         []string{GetTimestamp()},
+		"is_patch":   []string{"0"},
+		"heart_beat": []string{"[]"},
+		"ua":         []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"},
+		"csrf":       []string{user.Csrf},
+		"csrf_token": []string{user.Csrf},
+		"visit_id":   []string{""},
 	}
 	body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 	if err != nil {
 		log.Error("Heartbeat error: %v, data: %v", err, data)
 	}
-	var resp dto.BiliBaseResp
+	var resp dto.BiliHeartBeatResp
 	if err = json.Unmarshal(body, &resp); err != nil {
-		log.Error("Unmarshal BiliBaseResp error: %v, raw data: %v", err, body)
+		log.Error("Unmarshal BiliHeartBeatResp error: %v, raw data: %v", err, body)
 	}
-	return resp.Code == 0
+	return room, resp
+}
+
+func X(user conf.User, uuids []string, seq int, room dto.BiliLiveRoomInfo, hb dto.BiliHeartBeatResp) dto.BiliHeartBeatResp {
+	rawUrl := "https://live-trace.bilibili.com/xlive/data-interface/v1/x25Kn/X"
+	data := url.Values{
+		"id": []string{fmt.Sprintf("[%d,%d,%d,%d]",
+			room.Data.ParentAreaID, room.Data.AreaID, seq, room.Data.RoomID)},
+		"device":     []string{fmt.Sprintf("[\"%s\",\"%s\"]", user.Buvid, uuids[0])},
+		"platform":   []string{"web"},
+		"ets":        []string{fmt.Sprint(hb.Data.Timestamp)},
+		"benchmark":  []string{hb.Data.SecretKey},
+		"time":       []string{fmt.Sprint(hb.Data.HeartbeatInterval)},
+		"ts":         []string{GetTimestamp()},
+		"ua":         []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0"},
+		"csrf":       []string{user.Csrf},
+		"csrf_token": []string{user.Csrf},
+		"visit_id":   []string{""},
+	}
+	dataStr := fmt.Sprintf(`{"platform":"web","parent_id":%d,"area_id":%d,"seq_id":%d,"room_id":%d,"buvid":"%s","uuid":"%s","ets":%d,"time":%d,"ts":%s}`,
+		room.Data.ParentAreaID,
+		room.Data.AreaID,
+		seq,
+		room.Data.RoomID,
+		user.Buvid,
+		uuids[0],
+		hb.Data.Timestamp,
+		hb.Data.HeartbeatInterval,
+		data["ts"][0],
+	)
+	sum := CryptoSign(dataStr, hb.Data.SecretKey, hb.Data.SecretRule)
+	data["s"] = []string{sum}
+	body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
+	if err != nil {
+		log.Error("Heartbeat error: %v, data: %v", err, data)
+	}
+	var resp dto.BiliHeartBeatResp
+	if err = json.Unmarshal(body, &resp); err != nil {
+		log.Error("Unmarshal BiliHeartBeatResp error: %v, raw data: %v", err, body)
+	}
+	return resp
 }
