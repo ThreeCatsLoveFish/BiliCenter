@@ -30,6 +30,13 @@ func Error(format string, v ...interface{}) {
 	w.logger.Output(2, fmt.Sprintf("[ERROR] "+format, v...))
 }
 
+func PrintColor(format string, v ...interface{}) {
+	w.rotateFile()
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.logger.Printf(format, v...)
+}
+
 type AsyncLogger struct{}
 
 func (AsyncLogger) Debug(v ...interface{}) {

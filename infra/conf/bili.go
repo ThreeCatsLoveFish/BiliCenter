@@ -1,4 +1,4 @@
-package awpush
+package conf
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 	"github.com/gookit/config/v2/toml"
 )
 
-var biliConfig BiliConfig
+var BiliConf BiliConfig
 
 type User struct {
 	Uid    int
@@ -48,16 +48,16 @@ func initAWPush() {
 	if err != nil {
 		panic(err)
 	}
-	conf.BindStruct("awpush", &biliConfig)
-	biliConfig.Filter.WordsPat = make(
+	conf.BindStruct("awpush", &BiliConf)
+	BiliConf.Filter.WordsPat = make(
 		[]*regexp.Regexp,
-		len(biliConfig.Filter.Words),
+		len(BiliConf.Filter.Words),
 	)
-	for idx, word := range biliConfig.Filter.Words {
+	for idx, word := range BiliConf.Filter.Words {
 		pat := regexp.MustCompile(word)
-		biliConfig.Filter.WordsPat[idx] = pat
+		BiliConf.Filter.WordsPat[idx] = pat
 	}
-	for idx, user := range biliConfig.Users {
+	for idx, user := range BiliConf.Users {
 		req := http.Request{Header: map[string][]string{}}
 		req.Header.Set("cookie", user.Cookie)
 		uid, err := req.Cookie("DedeUserID")
@@ -72,7 +72,7 @@ func initAWPush() {
 		if err != nil {
 			panic("uid parse err")
 		}
-		biliConfig.Users[idx].Uid = int(num)
-		biliConfig.Users[idx].Csrf = csrf.Value
+		BiliConf.Users[idx].Uid = int(num)
+		BiliConf.Users[idx].Csrf = csrf.Value
 	}
 }

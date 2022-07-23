@@ -8,6 +8,7 @@ import (
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
 	"subcenter/infra"
+	"subcenter/infra/conf"
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
 	"sync/atomic"
@@ -21,13 +22,13 @@ func filterCheckLottery(anchor dto.AnchorMsg) bool {
 		return true
 	}
 	// Award is meaningless
-	for _, pat := range biliConfig.Filter.WordsPat {
+	for _, pat := range conf.BiliConf.Filter.WordsPat {
 		if pat.MatchString(anchor.Data.AwardName) {
 			return true
 		}
 	}
 	// Live room is not safe
-	for _, id := range biliConfig.Filter.Rooms {
+	for _, id := range conf.BiliConf.Filter.Rooms {
 		if anchor.Data.RoomID == id {
 			return true
 		}
@@ -47,7 +48,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 		"platform": []string{"pc"},
 	}
 	attend := false
-	for _, user := range biliConfig.Users {
+	for _, user := range conf.BiliConf.Users {
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)

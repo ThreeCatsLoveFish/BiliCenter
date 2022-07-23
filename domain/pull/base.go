@@ -11,7 +11,8 @@ var (
 )
 
 const (
-	HeartBeat = "HeartBeat"
+	HeartBeat   = "HeartBeat"
+	MedalHelper = "MedalHelper"
 )
 
 func init() {
@@ -21,6 +22,7 @@ func init() {
 		panic("load location error")
 	}
 	addPull(HeartBeat, HeartBeatPull{})
+	addPull(MedalHelper, MedalPull{})
 }
 
 type Pull interface {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"subcenter/infra"
+	"subcenter/infra/conf"
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
 )
@@ -12,7 +13,7 @@ import (
 const tagName = "BLTH天选关注UP"
 
 // createNewTag open a new tag with prefix of BLTH
-func createNewTag(user User) int {
+func createNewTag(user conf.User) int {
 	rawUrl := "https://api.bilibili.com/x/relation/tag/create"
 	data := url.Values{
 		"tag":  []string{tagName},
@@ -37,7 +38,7 @@ func createNewTag(user User) int {
 }
 
 // getTagId find the tag id of BLTH, if not found then create new tag
-func getTagId(user User) int {
+func getTagId(user conf.User) int {
 	rawUrl := "https://api.bilibili.com/x/relation/tags"
 	body, err := infra.Get(rawUrl, user.Cookie, nil)
 	if err != nil {
@@ -57,7 +58,7 @@ func getTagId(user User) int {
 }
 
 // moveUser update user relation
-func moveUser(user User, fids string) error {
+func moveUser(user conf.User, fids string) error {
 	rawUrl := "https://api.bilibili.com/x/relation/tags/moveUsers"
 	data := url.Values{
 		"beforeTagids": []string{"0"},
@@ -84,7 +85,7 @@ func moveUser(user User, fids string) error {
 }
 
 // getRelation obtains users in default tag list and move to BLTH group
-func getRelation(user User) (string, error) {
+func getRelation(user conf.User) (string, error) {
 	rawUrl := "https://api.bilibili.com/x/relation/tag"
 	data := url.Values{
 		"mid":   []string{fmt.Sprint(user.Uid)},
@@ -120,7 +121,7 @@ func UpdateRelation() interface{} {
 		Error error `json:"err"`
 	}
 	fail := make([]result, 0)
-	for _, user := range biliConfig.Users {
+	for _, user := range conf.BiliConf.Users {
 		fids, err := getRelation(user)
 		if err != nil {
 			data := result{

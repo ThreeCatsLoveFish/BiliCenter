@@ -3,6 +3,7 @@ package awpush
 import (
 	"encoding/json"
 	"subcenter/infra"
+	"subcenter/infra/conf"
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
 	"time"
@@ -73,7 +74,7 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 	// Send callback message
 	resp := dto.Callback{
 		Code:   "GET_TASK",
-		Uid:    biliConfig.Uid,
+		Uid:    conf.BiliConf.Uid,
 		Secret: task.Data.Secret,
 	}
 	data, err := json.Marshal(resp)
