@@ -17,7 +17,7 @@ func main() {
 	client := awpush.NewAWPushClient()
 	go client.Run()
 
-	// Initialize frontend
+	// Initialize server
 	router := gin.Default()
 	api.LoadApi(router)
 	router.Run(":8000")

@@ -20,6 +20,7 @@
 ### 数据服务
 
 - 天选时刻：[awpush](https://github.com/andywang425/BLTH-server)
+- 粉丝牌助手: [MedalHelper](https://github.com/ThreeCatsLoveFish/MedalHelper)
 
 ## 使用说明
 

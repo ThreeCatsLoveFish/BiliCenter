@@ -11,18 +11,18 @@ import (
 )
 
 type BiliPull struct {
-	roomid int
+	roomId int
 	uid    int
 }
 
-func NewBiliPull(roomid, uid int) BiliPull {
-	return BiliPull{roomid, uid}
+func NewBiliPull(roomId, uid int) BiliPull {
+	return BiliPull{roomId, uid}
 }
 
 func (pull BiliPull) getAwardUser() ([]byte, error) {
 	rawUrl := "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Check"
 	params := url.Values{
-		"roomid": []string{fmt.Sprint(pull.roomid)},
+		"roomid": []string{fmt.Sprint(pull.roomId)},
 	}
 	data, err := infra.Get(rawUrl, "", params)
 	if err != nil {

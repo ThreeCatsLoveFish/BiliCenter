@@ -2,6 +2,6 @@
 
 # [[tasks]]
 # init = true
-# period = 3600000000000
-# pull = "HeartBeat"
+# cron = "@daily"
+# pull = "MedalHelper"
 # push = "PUSH_DEER_SAMPLE"

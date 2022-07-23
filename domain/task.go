@@ -4,10 +4,10 @@ import (
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
 	"subcenter/infra/log"
-	"time"
 
 	"github.com/gookit/config/v2"
 	"github.com/gookit/config/v2/toml"
+	"github.com/robfig/cron"
 )
 
 type Task struct {
@@ -31,15 +31,15 @@ func (task Task) Execute() {
 // TaskMaker can trigger new task execution
 type TaskMaker struct {
 	Task
-	init   bool
-	period time.Duration
+	init bool
+	cron string
 }
 
 // NewTaskMaker create a new task maker
-func NewTaskMaker(period time.Duration, init bool, pullName, pushName string) TaskMaker {
+func NewTaskMaker(cron string, init bool, pullName, pushName string) TaskMaker {
 	return TaskMaker{
-		init:   init,
-		period: period,
+		init: init,
+		cron: cron,
 		Task: Task{
 			Pull: pull.NewPull(pullName),
 			Push: push.NewPush(pushName),
@@ -49,21 +49,21 @@ func NewTaskMaker(period time.Duration, init bool, pullName, pushName string) Ta
 
 // createTask can create new task and send to taker
 func createTask(maker TaskMaker, takers chan Task) {
+	c := cron.New()
+	c.AddFunc(maker.cron, func() {
+		takers <- maker.Task
+	})
 	if maker.init {
 		takers <- maker.Task
 	}
-	for {
-		timer := time.NewTimer(maker.period)
-		<-timer.C
-		takers <- maker.Task
-	}
+	c.Run()
 }
 
 type TaskConfig struct {
-	Init   bool   `config:"init"`
-	Pull   string `config:"pull"`
-	Push   string `config:"push"`
-	Period int64  `config:"period"`
+	Init bool   `config:"init"`
+	Pull string `config:"pull"`
+	Push string `config:"push"`
+	Cron string `config:"cron"`
 }
 
 func getTaskMaker() []TaskMaker {
@@ -84,7 +84,7 @@ func getTaskMaker() []TaskMaker {
 	for _, c := range taskConfig {
 		makers = append(
 			makers,
-			NewTaskMaker(time.Duration(c.Period), c.Init, c.Pull, c.Push),
+			NewTaskMaker(c.Cron, c.Init, c.Pull, c.Push),
 		)
 	}
 	return makers
@@ -110,6 +110,6 @@ func (tc *TaskCenter) Run() {
 		go createTask(maker, tc.takers)
 	}
 	for task := range tc.takers {
-		go task.Execute()
+		go func(task Task) { task.Execute() }(task)
 	}
 }

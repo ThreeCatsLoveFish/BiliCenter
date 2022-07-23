@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"subcenter/domain/push"
 	"subcenter/infra"
+	"subcenter/infra/conf"
 	"subcenter/infra/log"
 	"sync/atomic"
 	"time"
@@ -38,7 +39,7 @@ func NewAWPushClient() AWPushClient {
 
 // establish create a new websocket connection
 func establish() (ws *websocket.Conn, err error) {
-	conn, _, err := websocket.DefaultDialer.Dial(biliConfig.Wss, nil)
+	conn, _, err := websocket.DefaultDialer.Dial(conf.BiliConf.Wss, nil)
 	if err != nil {
 		log.Error("Dial error: %v", err)
 		return nil, err
@@ -58,7 +59,7 @@ func establish() (ws *websocket.Conn, err error) {
 	if err != nil {
 		log.Error("Ping failed, error: %v", err)
 	}
-	err = infra.Verify(conn, biliConfig.Uid, biliConfig.Token)
+	err = infra.Verify(conn, conf.BiliConf.Uid, conf.BiliConf.Token)
 	if err != nil {
 		log.Error("Verify failed, error: %v", err)
 	}
