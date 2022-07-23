@@ -1,8 +1,8 @@
-# SubCenter
+# BiliCenter
 
 [中文](README.md) | English
 
-SubCenter is a middleware that integrates task subscriptions and real-time push
+BiliCenter is a middleware that integrates task subscriptions and real-time push
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ThreeCatsLoveFish/SubCenter)
 [![wakatime](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter.svg)](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter)
@@ -24,8 +24,8 @@ SubCenter is a middleware that integrates task subscriptions and real-time push
 
 1. Clone source code
    ```bash
-   git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
-   cd SubCenter
+   git clone https://github.com/ThreeCatsLoveFish/BiliCenter.git
+   cd BiliCenter
    make build
    ```
 1. Add config files, fill in personal info and remove *.sample* suffix

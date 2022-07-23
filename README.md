@@ -1,8 +1,8 @@
-# SubCenter
+# BiliCenter
 
 中文 | [English](README-en.md)
 
-推送中心 —— 集成各种任务并进行实时推送的中间件。
+Bili推送中心 —— 集成各种b站任务并进行实时推送的中间件。
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ThreeCatsLoveFish/SubCenter)
 [![wakatime](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter.svg)](https://wakatime.com/badge/github/ThreeCatsLoveFish/SubCenter)
@@ -27,8 +27,8 @@
 ### 环境搭建
 
 ```bash
-git clone https://github.com/ThreeCatsLoveFish/SubCenter.git
-cd SubCenter
+git clone https://github.com/ThreeCatsLoveFish/BiliCenter.git
+cd BiliCenter
 make build
 ```
 
