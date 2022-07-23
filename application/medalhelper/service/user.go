@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"subcenter/application/medalhelper/manager"
 	"subcenter/domain/push"
@@ -71,6 +72,9 @@ func (account *Account) setMedals() {
 	// Clean medals storage
 	account.medalsLow = make([]dto.MedalInfo, 0, 10)
 	account.remainMedals = make([]dto.MedalInfo, 0, 10)
+	// Clean bad cache
+	manager.GetMedal(account.user)
+	time.Sleep(5 * time.Second)
 	// Fetch and update medals
 	medals, wearMedal := manager.GetMedal(account.user)
 	if wearMedal {
