@@ -7,22 +7,21 @@ import (
 	"sync"
 )
 
-type MedalPull struct {
-	accounts []service.Account
-}
+type MedalPull struct{}
 
-func NewMedalPull() MedalPull {
-	pull := MedalPull{}
+func (pull MedalPull) init() []service.Account {
+	accounts := make([]service.Account, 0, len(conf.BiliConf.Users))
 	for _, user := range conf.BiliConf.Users {
 		account := service.NewAccount(user)
-		pull.accounts = append(pull.accounts, account)
+		accounts = append(accounts, account)
 	}
-	return pull
+	return accounts
 }
 
 func (pull MedalPull) Obtain() ([]push.Data, error) {
+	accounts := pull.init()
 	wg := sync.WaitGroup{}
-	for _, account := range pull.accounts {
+	for _, account := range accounts {
 		wg.Add(1)
 		go func(user service.Account, wg *sync.WaitGroup) {
 			if status := user.Init(); status {
