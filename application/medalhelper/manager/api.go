@@ -228,8 +228,7 @@ func X(user conf.User, uuids []string, seq int, room dto.BiliLiveRoomInfo, hb dt
 		hb.Data.HeartbeatInterval,
 		data["ts"][0],
 	)
-	sum := CryptoSign(dataStr, hb.Data.SecretKey, hb.Data.SecretRule)
-	data["s"] = []string{sum}
+	data["s"] = []string{CryptoSign(dataStr, hb.Data.SecretKey, hb.Data.SecretRule)}
 	body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 	if err != nil {
 		log.Error("Heartbeat error: %v, data: %v", err, data)
