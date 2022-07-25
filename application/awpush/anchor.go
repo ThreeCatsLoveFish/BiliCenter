@@ -48,7 +48,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 		"platform": []string{"pc"},
 	}
 	attend := false
-	for _, user := range conf.BiliConf.Users {
+	for i, user := range conf.BiliConf.Users {
 		body, err := infra.PostFormWithCookie(rawUrl, user.Cookie, data)
 		if err != nil {
 			log.Error("PostFormWithCookie error: %v, raw data: %v", err, data)
@@ -73,7 +73,7 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 			log.Info("User %d join lottery %d failed because %s",
 				user.Uid, anchor.Data.ID, resp.Message)
 			if resp.Message == "未登录" && user.Login {
-				user.Login = false
+				conf.BiliConf.Users[i].Login = false
 				pushEnd := push.NewPush(user.Push)
 				pushEnd.Submit(push.Data{
 					Title:   "# Cookie失效",
