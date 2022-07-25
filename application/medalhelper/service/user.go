@@ -74,7 +74,7 @@ func (account *Account) setMedals() {
 	account.remainMedals = make([]dto.MedalInfo, 0, 10)
 	// Clean bad cache
 	manager.GetMedal(account.user)
-	time.Sleep(5 * time.Second)
+	time.Sleep(30 * time.Second)
 	// Fetch and update medals
 	medals, wearMedal := manager.GetMedal(account.user)
 	if wearMedal {

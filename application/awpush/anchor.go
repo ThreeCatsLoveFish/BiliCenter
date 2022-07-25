@@ -72,6 +72,13 @@ func joinLottery(client *AWPushClient, anchor dto.AnchorMsg) {
 		} else {
 			log.Info("User %d join lottery %d failed because %s",
 				user.Uid, anchor.Data.ID, resp.Message)
+			if resp.Message == "未登录" {
+				pushEnd := push.NewPush(user.Push)
+				pushEnd.Submit(push.Data{
+					Title:   "# Cookie失效",
+					Content: fmt.Sprintf("用户 %d Cookie失效", user.Uid),
+				})
+			}
 		}
 	}
 	if attend {
