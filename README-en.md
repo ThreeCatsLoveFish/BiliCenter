@@ -28,6 +28,10 @@ BiliCenter is a middleware that integrates task subscriptions and real-time push
    cd BiliCenter
    make build
    ```
+1. Login account
+   ```bash
+   go run main.go login
+   ```
 1. Add config files, fill in personal info and remove *.sample* suffix
    ```
    config

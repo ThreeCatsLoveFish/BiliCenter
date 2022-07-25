@@ -32,6 +32,12 @@ cd BiliCenter
 make build
 ```
 
+### 账号登录
+
+```bash
+go run main.go login
+```
+
 ### 配置文件
 
 填充配置文件内容并去掉 *.sample* 后缀

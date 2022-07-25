@@ -3,6 +3,7 @@ module subcenter
 go 1.16
 
 require (
+	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
 	github.com/BurntSushi/toml v1.0.0 // indirect
 	github.com/TwiN/go-color v1.1.0
 	github.com/botplayerneo/bili-live-api v0.1.2
@@ -12,9 +13,11 @@ require (
 	github.com/gookit/config/v2 v2.0.27
 	github.com/gookit/goutil v0.4.4 // indirect
 	github.com/gorilla/websocket v1.5.0
+	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/robfig/cron v1.2.0
 	github.com/sethvargo/go-retry v0.2.3
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/tidwall/gjson v1.14.1
 	github.com/ugorji/go v1.2.7 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
