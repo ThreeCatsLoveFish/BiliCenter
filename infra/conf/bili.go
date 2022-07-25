@@ -14,9 +14,10 @@ var BiliConf BiliConfig
 type User struct {
 	Uid    int
 	Csrf   string
-	Buvid   string
+	Buvid  string
 	Cookie string `config:"cookie"`
 	Push   string `config:"push"`
+	Login  bool
 }
 
 // LiveFilter store rooms and words with which lottery won't be join
@@ -80,5 +81,6 @@ func initAWPush() {
 		BiliConf.Users[idx].Uid = int(num)
 		BiliConf.Users[idx].Csrf = csrf.Value
 		BiliConf.Users[idx].Buvid = buvid.Value
+		BiliConf.Users[idx].Login = true
 	}
 }
