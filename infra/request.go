@@ -23,6 +23,7 @@ func Get(rawUrl, cookie string, params url.Values) ([]byte, error) {
 	req.Header.Set("Cookie", cookie)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0")
 	req.Header.Set("Connection", "keep-alive")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil || resp == nil || resp.StatusCode != 200 {
@@ -53,6 +54,7 @@ func PostFormWithCookie(url, cookie string, data url.Values) ([]byte, error) {
 	req.Header.Set("Cookie", cookie)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0")
 	req.Header.Set("Connection", "keep-alive")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil || resp == nil || resp.StatusCode != 200 {
