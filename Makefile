@@ -1,10 +1,12 @@
-all: build
+all: run
+
+BIN=./output/bilicenter
 
 build:
-	go build -o output/bilicenter main.go
+	go build -o $(BIN) main.go
 
 login: build
-	./output/bilicenter login
+	$(BIN) login
 
 run: build
-	./output/bilicenter
+	$(BIN)

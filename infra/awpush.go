@@ -5,12 +5,17 @@ import (
 	"fmt"
 	"subcenter/infra/dto"
 	"subcenter/infra/log"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
 
+var WSMutex sync.Mutex
+
 // Ping send Ping message
 func Ping(conn *websocket.Conn) error {
+	WSMutex.Lock()
+	defer WSMutex.Unlock()
 	return conn.WriteMessage(websocket.TextMessage, []byte("ping"))
 }
 
@@ -39,7 +44,9 @@ func Verify(conn *websocket.Conn, uid, apiKey string) error {
 		log.Error("Marshal error: %v", err)
 		return err
 	}
+	WSMutex.Lock()
 	err = conn.WriteMessage(websocket.BinaryMessage, PakoDeflate(dataStr))
+	WSMutex.Unlock()
 	if err != nil {
 		log.Error("Verify error: %v", err)
 		return err

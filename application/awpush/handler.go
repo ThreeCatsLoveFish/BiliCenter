@@ -82,7 +82,9 @@ func taskCallBack(conn *websocket.Conn, task dto.TaskMsg) error {
 		log.Error("Marshal error: %v", err)
 		return err
 	}
+	infra.WSMutex.Lock()
 	err = conn.WriteMessage(websocket.BinaryMessage, infra.PakoDeflate(data))
+	infra.WSMutex.Unlock()
 	if err != nil {
 		log.Error("Callback send error: %v", err)
 		return err
