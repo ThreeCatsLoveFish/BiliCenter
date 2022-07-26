@@ -4,7 +4,7 @@ build:
 	go build -o output/bilicenter main.go
 
 login: build
-	./output/bilicenter
+	./output/bilicenter login
 
 run: build
 	./output/bilicenter
