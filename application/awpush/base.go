@@ -21,16 +21,16 @@ type AWPushClient struct {
 	join int32 // joined lottery number
 
 	// Timer used for trigger action
-	report  *log.DayTicker // report lottery status
-	reset   *time.Timer    // reconnect awpush server
-	sleep   *time.Timer    // sleep before handle next message
-	timeout *time.Timer    // send heartbeat
+	report  *time.Ticker // report lottery status
+	reset   *time.Timer  // reconnect awpush server
+	sleep   *time.Timer  // sleep before handle next message
+	timeout *time.Timer  // send heartbeat
 }
 
 func NewAWPushClient() AWPushClient {
 	return AWPushClient{
 		conn:    nil,
-		report:  log.NewDayTicker(),
+		report:  time.NewTicker(time.Minute),
 		timeout: time.NewTimer(time.Second * 30),
 		reset:   time.NewTimer(time.Microsecond),
 		sleep:   time.NewTimer(time.Second),
@@ -108,10 +108,7 @@ func (tc *AWPushClient) Run() {
 				})
 			}
 		case <-tc.report.C:
-			push.NewPush("threecats").Submit(push.Data{
-				Title:   "# awpush report",
-				Content: fmt.Sprintf("Recv: %d, join: %d", tc.recv, tc.join),
-			})
+			log.Debug("Recv: %d, join: %d", tc.recv, tc.join)
 			atomic.StoreInt32(&tc.recv, 0)
 			atomic.StoreInt32(&tc.join, 0)
 		}

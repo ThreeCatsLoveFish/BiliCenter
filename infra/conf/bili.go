@@ -34,6 +34,7 @@ type BiliConfig struct {
 	Wss    string     `config:"wss"`
 	Users  []User     `config:"users"`
 	Filter LiveFilter `config:"filter"`
+	Qps    int32      `config:"qps"`
 }
 
 func init() {

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
+	"strconv"
 	"subcenter/domain"
 	"subcenter/domain/pull"
 	"subcenter/domain/push"
@@ -14,6 +16,12 @@ import (
 	"sync/atomic"
 	"time"
 )
+
+var redPocket *regexp.Regexp
+
+func init() {
+	redPocket = regexp.MustCompile(`(([1-9][0-9]*)(\.[0-9]{1,2})?)元`)
+}
 
 // filterCheckLottery abort blacklist lottery
 func filterCheckLottery(anchor dto.AnchorMsg) bool {
@@ -30,6 +38,15 @@ func filterCheckLottery(anchor dto.AnchorMsg) bool {
 	// Live room is not safe
 	for _, id := range conf.BiliConf.Filter.Rooms {
 		if anchor.Data.RoomID == id {
+			return true
+		}
+	}
+	// Amount of red pocket is too small
+	res := redPocket.FindSubmatch([]byte(anchor.Data.AwardName))
+	if len(res) > 0 {
+		amount := string(res[1])
+		money, _ := strconv.ParseFloat(amount, 32)
+		if money < 5 {
 			return true
 		}
 	}
@@ -95,8 +112,12 @@ func HandleAnchorData(client *AWPushClient, msg []byte) error {
 		client.sleep.Reset(time.Microsecond)
 		return err
 	}
-	client.sleep.Reset(time.Microsecond)
+	during := time.Microsecond
 	atomic.AddInt32(&client.recv, 1)
+	if client.join >= conf.BiliConf.Qps {
+		during = time.Second * 30
+	}
+	client.sleep.Reset(during)
 	go joinLottery(client, anchor)
 	return nil
 }
